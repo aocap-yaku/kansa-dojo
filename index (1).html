@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>処方監査道場 | 新人薬剤師のための監査トレーニング</title>
+<meta name="description" content="新人薬剤師向けの処方監査トレーニングアプリ。20の模擬処方箋で疑義照会の目を鍛える。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --desk:#232B36;        /* 監査台の濃紺 */
+  --desk-2:#2C3645;
+  --paper:#FFFFFF;       /* 処方箋の紙 */
+  --paper-line:#C9D2DC;  /* 帳票の罫線 */
+  --ink:#1C2430;         /* 墨色の本文 */
+  --ink-soft:#5A6577;
+  --shu:#C9402F;         /* 朱肉(疑義) */
+  --shu-deep:#A93325;
+  --pass:#2F7D5B;        /* 監査済の緑 */
+  --pass-deep:#256348;
+  --gold:#C9A23F;        /* 段位の金 */
+  --muted:#8A93A3;
+  --radius:10px;
+  --font-display:'Zen Old Mincho', serif;
+  --font-body:'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  font-family:var(--font-body);
+  background:var(--desk);
+  background-image:linear-gradient(180deg, #1D242E 0%, var(--desk) 30%, var(--desk) 100%);
+  color:var(--ink);
+  min-height:100vh;
+  line-height:1.7;
+}
+.wrap{max-width:680px;margin:0 auto;padding:16px 14px 60px;}
+
+/* ===== ヘッダー ===== */
+header{display:flex;align-items:center;gap:12px;padding:14px 2px 18px;}
+.logo-seal{
+  width:46px;height:46px;flex:none;
+  border:2.5px solid var(--shu);border-radius:8px;
+  color:var(--shu);
+  font-family:var(--font-display);font-weight:900;font-size:24px;
+  display:flex;align-items:center;justify-content:center;
+  transform:rotate(-6deg);
+  background:rgba(201,64,47,.06);
+}
+.logo-text h1{
+  font-family:var(--font-display);font-weight:900;
+  color:#F3F5F8;font-size:24px;letter-spacing:.12em;line-height:1.2;
+}
+.logo-text p{color:var(--muted);font-size:12px;letter-spacing:.06em;margin-top:2px;}
+
+/* ===== 進捗 ===== */
+.progress-row{display:flex;align-items:center;gap:10px;margin:4px 0 14px;color:#C7CEDA;font-size:13px;}
+.progress-bar{flex:1;height:6px;background:var(--desk-2);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--shu),#E0684F);border-radius:3px;transition:width .4s ease;}
+
+/* ===== カード共通 ===== */
+.screen{display:none;}
+.screen.active{display:block;animation:fadeUp .35s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion: reduce){
+  .screen.active{animation:none;}
+  .stamp{animation:none !important;}
+  .progress-fill{transition:none;}
+}
+
+/* ===== 処方箋カード ===== */
+.rx-card{
+  position:relative;
+  background:var(--paper);
+  border-radius:var(--radius);
+  box-shadow:0 10px 30px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+  overflow:hidden;
+}
+.rx-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:14px 18px 10px;border-bottom:2px solid var(--ink);
+}
+.rx-head .title{font-family:var(--font-display);font-weight:700;font-size:18px;letter-spacing:.4em;}
+.rx-head .no{font-size:11px;color:var(--ink-soft);letter-spacing:.05em;}
+.rx-patient{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  border-bottom:1px solid var(--paper-line);font-size:13px;
+}
+.rx-patient div{padding:8px 18px;border-bottom:1px solid var(--paper-line);}
+.rx-patient div:nth-child(odd){border-right:1px solid var(--paper-line);}
+.rx-patient .label{display:block;font-size:10px;color:var(--ink-soft);letter-spacing:.1em;}
+.rx-body{padding:14px 18px 10px;}
+.rx-body .rp{display:flex;gap:10px;margin-bottom:12px;font-size:14.5px;}
+.rx-body .rp-no{flex:none;font-family:var(--font-display);font-weight:700;color:var(--ink-soft);font-size:13px;padding-top:2px;}
+.rx-body .rp-main .drug{font-weight:700;}
+.rx-body .rp-main .usage{color:var(--ink-soft);font-size:13px;}
+.rx-note{
+  margin:4px 18px 16px;padding:10px 12px;
+  background:#F4F6F8;border-left:3px solid var(--muted);
+  font-size:12.5px;color:var(--ink-soft);border-radius:0 6px 6px 0;
+}
+.rx-note b{color:var(--ink);}
+
+/* ===== 判子スタンプ ===== */
+.stamp{
+  position:absolute;right:18px;bottom:14px;
+  width:84px;height:84px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-family:var(--font-display);font-weight:900;font-size:20px;line-height:1.15;
+  transform:rotate(-12deg) scale(1);
+  pointer-events:none;
+  animation:stampIn .35s cubic-bezier(.2,2.2,.4,1) both;
+  mix-blend-mode:multiply;
+}
+.stamp.shu{border:3.5px solid var(--shu);color:var(--shu);background:rgba(201,64,47,.05);box-shadow:inset 0 0 0 1.5px rgba(201,64,47,.35);}
+.stamp.pass{border:3.5px solid var(--pass);color:var(--pass);background:rgba(47,125,91,.05);box-shadow:inset 0 0 0 1.5px rgba(47,125,91,.35);}
+@keyframes stampIn{
+  0%{opacity:0;transform:rotate(-12deg) scale(2.1);}
+  100%{opacity:1;transform:rotate(-12deg) scale(1);}
+}
+
+/* ===== 判定ボタン ===== */
+.judge-row{display:flex;gap:12px;margin-top:16px;}
+.judge-btn{
+  flex:1;padding:16px 8px;border:none;border-radius:var(--radius);
+  font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:.15em;
+  color:#fff;cursor:pointer;transition:transform .12s ease, filter .12s ease;
+}
+.judge-btn:active{transform:scale(.97);}
+.judge-btn:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+.judge-btn .sub{display:block;font-family:var(--font-body);font-size:11px;font-weight:400;letter-spacing:.05em;opacity:.85;margin-top:2px;}
+.judge-btn.giginashi{background:var(--pass);}
+.judge-btn.giginashi:hover{filter:brightness(1.08);}
+.judge-btn.gigiari{background:var(--shu);}
+.judge-btn.gigiari:hover{filter:brightness(1.08);}
+
+/* ===== カテゴリ選択 ===== */
+.category-panel{margin-top:16px;display:none;}
+.category-panel.show{display:block;animation:fadeUp .3s ease both;}
+.category-panel h3{color:#E8EBF0;font-size:14px;font-weight:500;margin-bottom:10px;}
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.cat-btn{
+  padding:13px 10px;border:1.5px solid #4A5568;border-radius:8px;
+  background:var(--desk-2);color:#DFE4EC;font-size:13.5px;font-weight:500;
+  cursor:pointer;text-align:center;transition:border-color .15s, background .15s;
+  font-family:var(--font-body);
+}
+.cat-btn:hover{border-color:var(--shu);background:#36414F;}
+.cat-btn:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+
+/* ===== 解説 ===== */
+.result-banner{
+  margin-top:16px;padding:12px 16px;border-radius:var(--radius);
+  font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:.08em;
+  display:flex;align-items:center;gap:10px;color:#fff;
+}
+.result-banner .mark{font-size:22px;}
+.result-banner.correct{background:var(--pass);}
+.result-banner.partial{background:var(--gold);color:#3A3014;}
+.result-banner.miss{background:var(--shu-deep);}
+.result-banner.over{background:#5A6577;}
+.explain{
+  margin-top:10px;background:#FDFDFB;border-radius:var(--radius);
+  padding:16px 18px;box-shadow:0 6px 18px rgba(0,0,0,.3);
+}
+.explain h4{
+  font-family:var(--font-display);font-size:14px;letter-spacing:.1em;
+  color:var(--shu-deep);border-bottom:1px solid var(--paper-line);
+  padding-bottom:6px;margin:14px 0 8px;
+}
+.explain h4:first-child{margin-top:0;}
+.explain p{font-size:14px;margin-bottom:6px;}
+.explain .tag{
+  display:inline-block;font-size:11px;font-weight:700;color:#fff;
+  background:var(--ink-soft);border-radius:4px;padding:2px 8px;margin-bottom:8px;letter-spacing:.05em;
+}
+.talk-bubble{
+  background:#EAF3EE;border-radius:14px 14px 14px 4px;
+  padding:12px 14px;font-size:13.5px;position:relative;margin-top:6px;
+  border:1px solid #CBE0D4;
+}
+.talk-bubble::before{content:"📞 疑義照会トーク例";display:block;font-size:11px;font-weight:700;color:var(--pass-deep);margin-bottom:4px;letter-spacing:.05em;}
+.next-btn{
+  display:block;width:100%;margin-top:16px;padding:15px;
+  border:none;border-radius:var(--radius);cursor:pointer;
+  background:#F3F5F8;color:var(--ink);font-family:var(--font-display);
+  font-weight:700;font-size:16px;letter-spacing:.2em;
+  transition:transform .12s ease;
+}
+.next-btn:active{transform:scale(.98);}
+.next-btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+
+/* ===== スタート画面 ===== */
+.start-card{background:var(--paper);border-radius:var(--radius);padding:26px 22px;box-shadow:0 10px 30px rgba(0,0,0,.35);}
+.start-card h2{font-family:var(--font-display);font-weight:900;font-size:21px;letter-spacing:.1em;margin-bottom:12px;}
+.start-card p{font-size:14px;color:var(--ink-soft);margin-bottom:10px;}
+.start-card ul{font-size:13.5px;color:var(--ink);padding-left:1.3em;margin-bottom:14px;}
+.start-card li{margin-bottom:4px;}
+.best-score{font-size:13px;color:var(--pass-deep);font-weight:700;margin-bottom:6px;}
+.start-btn{
+  display:block;width:100%;padding:16px;border:none;border-radius:var(--radius);
+  background:var(--shu);color:#fff;font-family:var(--font-display);
+  font-weight:900;font-size:18px;letter-spacing:.3em;cursor:pointer;
+  transition:filter .15s, transform .12s;
+}
+.start-btn:hover{filter:brightness(1.08);}
+.start-btn:active{transform:scale(.98);}
+.start-btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+
+/* ===== 結果画面 ===== */
+.final-card{background:var(--paper);border-radius:var(--radius);padding:26px 22px;box-shadow:0 10px 30px rgba(0,0,0,.35);text-align:center;}
+.rank-seal{
+  width:120px;height:120px;margin:6px auto 10px;border-radius:50%;
+  border:4px solid var(--shu);color:var(--shu);
+  font-family:var(--font-display);font-weight:900;font-size:30px;
+  display:flex;align-items:center;justify-content:center;
+  transform:rotate(-8deg);line-height:1.2;text-align:center;
+  background:rgba(201,64,47,.04);
+}
+.final-card .rank-name{font-family:var(--font-display);font-weight:900;font-size:22px;letter-spacing:.15em;margin-bottom:2px;}
+.final-card .rank-msg{font-size:13px;color:var(--ink-soft);margin-bottom:16px;}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.score-cell{background:#F4F6F8;border-radius:8px;padding:10px 4px;}
+.score-cell .num{font-family:var(--font-display);font-weight:900;font-size:24px;}
+.score-cell .lbl{font-size:11px;color:var(--ink-soft);}
+.score-cell.c-correct .num{color:var(--pass);}
+.score-cell.c-miss .num{color:var(--shu);}
+.score-cell.c-over .num{color:var(--ink-soft);}
+.cat-stats{text-align:left;margin-bottom:18px;}
+.cat-stats h3{font-family:var(--font-display);font-size:14px;letter-spacing:.1em;margin-bottom:8px;border-bottom:1px solid var(--paper-line);padding-bottom:5px;}
+.cat-row{display:flex;align-items:center;gap:8px;font-size:12.5px;margin-bottom:6px;}
+.cat-row .name{width:9.5em;flex:none;color:var(--ink);}
+.cat-row .bar{flex:1;height:8px;background:#E7EBEF;border-radius:4px;overflow:hidden;}
+.cat-row .bar-fill{height:100%;background:var(--pass);border-radius:4px;}
+.cat-row .pct{width:3.2em;text-align:right;color:var(--ink-soft);flex:none;}
+.share-btn{
+  display:block;width:100%;padding:13px;margin-bottom:10px;border:none;border-radius:var(--radius);
+  background:var(--ink);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-body);
+}
+.share-btn:focus-visible,.retry-btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+.retry-btn{
+  display:block;width:100%;padding:13px;border:1.5px solid var(--ink);border-radius:var(--radius);
+  background:transparent;color:var(--ink);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-body);
+}
+footer{margin-top:28px;text-align:center;color:var(--muted);font-size:11px;line-height:1.8;}
+footer a{color:#AEB7C6;}
+
+@media (max-width:430px){
+  .rx-head .title{letter-spacing:.25em;font-size:16px;}
+  .cat-grid{grid-template-columns:1fr;}
+  .judge-btn{font-size:15.5px;letter-spacing:.1em;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="logo-seal" aria-hidden="true">監</div>
+  <div class="logo-text">
+    <h1>処方監査道場</h1>
+    <p>新人薬剤師のための監査トレーニング 全30問</p>
+  </div>
+</header>
+
+<div class="progress-row" id="progressRow" style="visibility:hidden;">
+  <span id="progressLabel">第 1 問 / 20</span>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<!-- スタート画面 -->
+<section class="screen active" id="screenStart">
+  <div class="start-card">
+    <h2>監査の「目」を鍛える、30枚の処方箋。</h2>
+    <p>実際の調剤現場で遭遇しうる模擬処方箋を1枚ずつ監査します。あなたの判断は——</p>
+    <ul>
+      <li><b>疑義あり</b>:処方医への確認が必要と判断 → 理由のカテゴリを選択</li>
+      <li><b>監査通過</b>:このまま調剤して問題なしと判断</li>
+    </ul>
+    <p>「見逃し」だけでなく「過剰疑義」(問題ない処方への不要な照会)もカウントされます。すべての処方を疑えばよいわけではない——それが監査の難しさです。</p>
+    <p class="best-score" id="bestScore"></p>
+    <button class="start-btn" id="startBtn">監査開始</button>
+  </div>
+</section>
+
+<!-- 出題画面 -->
+<section class="screen" id="screenQuiz">
+  <div class="rx-card" id="rxCard"></div>
+  <div class="judge-row" id="judgeRow">
+    <button class="judge-btn gigiari" id="btnGigi">疑義あり<span class="sub">処方医に確認が必要</span></button>
+    <button class="judge-btn giginashi" id="btnPass">監査通過<span class="sub">このまま調剤できる</span></button>
+  </div>
+  <div class="category-panel" id="categoryPanel">
+    <h3>どこに疑義がありますか? 最も当てはまるものを選択:</h3>
+    <div class="cat-grid" id="catGrid"></div>
+  </div>
+  <div id="explainArea"></div>
+</section>
+
+<!-- 結果画面 -->
+<section class="screen" id="screenResult">
+  <div class="final-card" id="finalCard"></div>
+</section>
+
+<footer>
+  処方監査道場 v1.0 | 教育用の模擬症例です。実際の判断は最新の添付文書・ガイドラインをご確認ください。<br>
+  © aocap-yaku
+</footer>
+
+</div>
+<script>
+/* ===== 処方監査道場 v1.0 ===== */
+"use strict";
+
+const CATS = {
+  dose:   "用法・用量(腎機能含む)",
+  inter:  "相互作用・併用禁忌",
+  dup:    "重複投与(他科・配合剤)",
+  contra: "患者側の禁忌(疾患・年齢・妊娠)",
+  formal: "制度・剤形・規格"
+};
+
+const CASES = [
+{
+  id:1, hasIssue:true, cat:"dose", issueTitle:"小児アセトアミノフェンの過量",
+  pt:{age:"4歳", sex:"女", info:[["体重","16.2 kg"],["主訴","発熱・感冒"]]},
+  rps:[
+    {drug:"カロナール細粒20% 1回2g(アセトアミノフェンとして400mg)", usage:"1日3回 毎食後 5日分"}
+  ],
+  note:"併用薬なし。体重は母親からの聞き取り。",
+  point:"小児のアセトアミノフェンは<b>1回10〜15mg/kg</b>(16kgなら1回160〜240mg)、1日総量60mg/kgが上限の目安。本処方は1回約25mg/kg・1日約75mg/kgで明確な過量。肝障害のリスクがある。小児の解熱鎮痛薬は必ず体重から逆算する。",
+  talk:"カロナール細粒についてです。体重16kgですと1回160〜240mg程度が目安ですが、1回400mgのご指示となっております。用量のご確認をお願いできますでしょうか。"
+},
+{
+  id:2, hasIssue:true, cat:"dose", issueTitle:"腎機能低下時のバラシクロビル過量",
+  pt:{age:"82歳", sex:"女", info:[["診断","帯状疱疹"],["検査値","SCr 1.4 / 推算CCr 約28 mL/min"]]},
+  rps:[
+    {drug:"バルトレックス錠500mg 1回2錠", usage:"1日3回 毎食後 7日分"}
+  ],
+  note:"検査結果は本人持参。ふらつきの訴えあり。",
+  point:"バラシクロビル(帯状疱疹)は<b>CCr 10〜29で「1回1000mg・1日1回」</b>へ減量が必要。常用量のままでは<b>アシクロビル脳症</b>(意識障害・ふらつき・幻覚)のリスク。高齢者の抗ウイルス薬は腎機能チェックが監査の最重要ポイント。",
+  talk:"バルトレックスについてです。推算CCrが28程度の患者さんですので、添付文書上は1回1000mg・1日1回への減量が目安となります。用量変更のご検討をお願いできますでしょうか。"
+},
+{
+  id:3, hasIssue:true, cat:"inter", issueTitle:"スボレキサント×クラリスロマイシン(併用禁忌)",
+  pt:{age:"56歳", sex:"男", info:[["診断","急性副鼻腔炎"],["併用薬","お薬手帳参照"]]},
+  rps:[
+    {drug:"クラリス錠200mg 2錠", usage:"分2 朝夕食後 7日分"},
+    {drug:"カルボシステイン錠500mg 3錠", usage:"分3 毎食後 7日分"}
+  ],
+  note:"お薬手帳:心療内科より<b>ベルソムラ錠20mg</b>(継続中)。",
+  point:"スボレキサント(ベルソムラ)は<b>CYP3Aを強く阻害する薬剤(クラリスロマイシン、イトラコナゾール、リトナビル等)と併用禁忌</b>。作用が著しく増強する。新規の抗菌薬処方では、手帳の「いつもの薬」との禁忌チェックを習慣化する。",
+  talk:"ベルソムラを継続中の患者さんで、クラリスロマイシンは併用禁忌に該当いたします。抗菌薬の変更をご検討いただけますでしょうか。"
+},
+{
+  id:4, hasIssue:true, cat:"dup", issueTitle:"NSAIDsの他科重複",
+  pt:{age:"71歳", sex:"男", info:[["診断","腰痛症(整形外科)"],["併用薬","お薬手帳参照"]]},
+  rps:[
+    {drug:"ロキソプロフェン錠60mg 3錠", usage:"分3 毎食後 14日分"},
+    {drug:"レバミピド錠100mg 3錠", usage:"分3 毎食後 14日分"}
+  ],
+  note:"お薬手帳:内科より<b>セレコックス錠100mg 2錠 分2</b>(継続中)。",
+  point:"ロキソプロフェンとセレコキシブで<b>NSAIDsが重複</b>。高齢者では消化管出血・腎障害リスクが増大する。整形外科×内科など「処方医が互いを知らない」パターンは重複の温床。お薬手帳の確認が監査の生命線。",
+  talk:"内科からセレコックスが継続処方されている患者さんです。ロキソプロフェンとNSAIDsが重複いたしますが、併用のご意図か確認させていただけますでしょうか。"
+},
+{
+  id:5, hasIssue:true, cat:"contra", issueTitle:"妊婦へのARB(禁忌)",
+  pt:{age:"34歳", sex:"女", info:[["診断","高血圧症"],["特記","妊娠16週(産科通院中)"]]},
+  rps:[
+    {drug:"カンデサルタン錠8mg 1錠", usage:"分1 朝食後 30日分"}
+  ],
+  note:"妊娠は投薬カウンターでの聞き取りで判明。処方医は把握していない可能性。",
+  point:"ARB・ACE阻害薬は<b>妊婦に禁忌</b>。中期以降は胎児の腎障害・羊水過少・肺低形成等のリスク。妊娠可能年齢の女性への降圧薬・脂質異常症薬では、妊娠の有無の聞き取りが監査に直結する。代替はメチルドパ、ラベタロール、ニフェジピン徐放など。",
+  talk:"患者さんが現在妊娠16週とのことです。カンデサルタンは妊婦禁忌のため、降圧薬の変更をご検討いただけますでしょうか。"
+},
+{
+  id:6, hasIssue:false, cat:"none", issueTitle:"急性中耳炎の高用量アモキシシリン(適正)",
+  pt:{age:"5歳", sex:"男", info:[["体重","18.5 kg"],["診断","急性中耳炎"]]},
+  rps:[
+    {drug:"ワイドシリン細粒20% 1日8g(アモキシシリンとして1600mg)", usage:"分3 毎食後 5日分"}
+  ],
+  note:"処方箋備考欄:「<b>急性中耳炎・高用量療法</b>」。ペニシリンアレルギーなし。",
+  point:"約86mg/kg/日で添付文書の常用量(20〜40mg/kg/日)を超えるが、<b>急性中耳炎ガイドラインでは耐性菌を考慮した高用量療法(〜90mg/kg/日)が推奨</b>されており、備考欄に意図も明記されている。「常用量超え=即疑義」ではない。意図的高用量のパターン(AMPC高用量、マクロライド少量長期など)は知識として持っておく。",
+  talk:""
+},
+{
+  id:7, hasIssue:true, cat:"formal", issueTitle:"エチゾラムの投与日数制限超過",
+  pt:{age:"42歳", sex:"男", info:[["診断","不安神経症"],["特記","長期出張のため長めの処方を希望"]]},
+  rps:[
+    {drug:"デパス錠0.5mg 3錠", usage:"分3 毎食後 60日分"}
+  ],
+  note:"前回までは30日分で処方されていた。",
+  point:"エチゾラムは向精神薬指定により<b>1回の投薬期間は30日分が上限</b>。患者の事情があっても上限は超えられない。分割指示や受診間隔の調整を処方医と相談する。日数制限(14日・30日・90日)のある薬剤は一覧で頭に入れておく。",
+  talk:"デパスは投与日数の上限が30日分となっております。30日分への変更、または分割調剤等でのご対応をお願いできますでしょうか。"
+},
+{
+  id:8, hasIssue:true, cat:"dup", issueTitle:"配合剤の成分重複(ARBが2剤)",
+  pt:{age:"68歳", sex:"男", info:[["診断","高血圧症"],["経過","今回からRp2が追加"]]},
+  rps:[
+    {drug:"ユニシア配合錠LD 1錠", usage:"分1 朝食後 30日分"},
+    {drug:"テルミサルタン錠40mg 1錠", usage:"分1 朝食後 30日分"}
+  ],
+  note:"前回まではユニシア配合錠LDのみ。",
+  point:"ユニシアは<b>カンデサルタン+アムロジピンの配合剤</b>。テルミサルタンの追加で<b>ARBが2剤に重複</b>する(増強目的でもARB併用は原則行わない)。配合剤の「中身」の見落としは新人監査の頻出ポイント。配合剤を見たら必ず成分に分解して考える癖を。",
+  talk:"ユニシア配合錠にはカンデサルタンが含まれており、テルミサルタンとARBが重複いたします。追加のご意図を確認させていただけますでしょうか。"
+},
+{
+  id:9, hasIssue:true, cat:"contra", issueTitle:"12歳未満へのコデイン(禁忌)",
+  pt:{age:"9歳", sex:"男", info:[["体重","28 kg"],["主訴","感冒・咳嗽"]]},
+  rps:[
+    {drug:"コデインリン酸塩散1% 1回0.6g", usage:"1日3回 毎食後 5日分"},
+    {drug:"カルボシステインDS50% 1日1.7g", usage:"分3 毎食後 5日分"}
+  ],
+  note:"アレルギー歴なし。",
+  point:"コデインリン酸塩は<b>12歳未満に禁忌</b>(呼吸抑制リスク、2019年に添付文書改訂)。年齢禁忌は「用量が合っていても通せない」タイプの疑義。チペピジンやデキストロメトルファン(年齢に応じ)等への変更を相談する。",
+  talk:"コデインリン酸塩は12歳未満のお子さんには禁忌となっております。鎮咳薬の変更をご検討いただけますでしょうか。"
+},
+{
+  id:10, hasIssue:true, cat:"contra", issueTitle:"閉塞隅角緑内障へのPL配合顆粒(禁忌)",
+  pt:{age:"64歳", sex:"女", info:[["主訴","感冒"],["既往","閉塞隅角緑内障(点眼治療中)"]]},
+  rps:[
+    {drug:"PL配合顆粒 1回1g", usage:"1日3回 毎食後 5日分"}
+  ],
+  note:"緑内障は投薬時の聞き取りで判明。眼科手帳あり。",
+  point:"PL配合顆粒の抗ヒスタミン成分(プロメタジン)には抗コリン作用があり、<b>閉塞隅角緑内障には禁忌</b>(眼圧上昇)。開放隅角であれば直ちに禁忌ではないため、<b>病型の確認</b>も監査の質を上げる。アセトアミノフェン単剤等への変更を提案。",
+  talk:"閉塞隅角緑内障で治療中の患者さんです。PL配合顆粒は禁忌に該当するため、カロナール等への変更はいかがでしょうか。"
+},
+{
+  id:11, hasIssue:false, cat:"none", issueTitle:"マクロライド少量長期療法(適正)",
+  pt:{age:"49歳", sex:"女", info:[["診断","慢性副鼻腔炎(耳鼻科)"],["経過","前回も同処方・症状は改善傾向"]]},
+  rps:[
+    {drug:"クラリス錠200mg 1錠", usage:"分1 朝食後 28日分"}
+  ],
+  note:"継続処方。併用薬なし。",
+  point:"常用量(400mg/日)の半量だが、これは<b>マクロライド少量長期療法</b>。慢性副鼻腔炎などで半量を数か月継続する確立された治療法で、抗菌作用ではなく抗炎症作用を期待している。「半量=過少では?」は早とちり。<b>診療科・疾患名・継続処方かどうか</b>から処方意図を読む。",
+  talk:""
+},
+{
+  id:12, hasIssue:true, cat:"inter", issueTitle:"ワルファリン×ミコナゾールゲル(併用禁忌)",
+  pt:{age:"77歳", sex:"男", info:[["診断","口腔カンジダ症(歯科)"],["併用薬","お薬手帳参照"]]},
+  rps:[
+    {drug:"フロリードゲル経口用2% 1日20g", usage:"分4 口腔内に塗布後嚥下 7日分"}
+  ],
+  note:"お薬手帳:循環器内科より<b>ワーファリン錠1mg 3錠 分1</b>(継続中)。",
+  point:"ミコナゾール(経口ゲル・口腔用錠を含む)は<b>ワルファリンと併用禁忌</b>。CYP2C9阻害によりINRが著しく上昇し、重篤な出血の報告が多数ある。「塗り薬のような見た目」でも嚥下して全身に作用する剤形に注意。",
+  talk:"ワーファリン服用中の患者さんで、フロリードゲルは併用禁忌に該当いたします。抗真菌薬の変更をご検討いただけますでしょうか。"
+},
+{
+  id:13, hasIssue:true, cat:"contra", issueTitle:"重度腎機能障害へのメトホルミン(禁忌)",
+  pt:{age:"72歳", sex:"男", info:[["診断","2型糖尿病"],["検査値","eGFR 22 mL/min/1.73m²"]]},
+  rps:[
+    {drug:"メトグルコ錠500mg 2錠", usage:"分2 朝夕食後 30日分"}
+  ],
+  note:"検査結果は本人持参。最近腎機能が悪化傾向とのこと。",
+  point:"メトホルミンは<b>eGFR 30未満で禁忌</b>(乳酸アシドーシスのリスク)。eGFR 30〜45でも減量・慎重投与の検討対象。継続処方でも「腎機能は変わる」ため、検査値を入手できたタイミングでの再監査が重要。",
+  talk:"eGFRが22の患者さんです。メトホルミンは30未満で禁忌となるため、処方のご変更をご検討いただけますでしょうか。"
+},
+{
+  id:14, hasIssue:true, cat:"dose", issueTitle:"高齢者へのプレガバリン初期量過量",
+  pt:{age:"88歳", sex:"女", info:[["診断","帯状疱疹後神経痛"],["体格","38 kg(小柄)/ SCr 0.9"]]},
+  rps:[
+    {drug:"リリカOD錠75mg 1回2錠", usage:"1日2回 朝夕食後 14日分(新規開始)"}
+  ],
+  note:"高齢・低体重のため、SCrが正常範囲でも実際の腎機能はかなり低い可能性。",
+  point:"プレガバリンは<b>1日150mgからの開始が原則</b>で、高齢・腎機能低下例ではさらに低用量(25〜75mg/日)からの漸増が安全。いきなり300mg/日はめまい・傾眠から<b>転倒・骨折</b>に直結する。高齢者では「SCrが正常に見えても腎機能は低い」点も要注意。",
+  talk:"88歳・小柄な患者さんへのリリカ新規開始です。初期量は1日150mg以下からの漸増が推奨されますので、減量のご検討をお願いできますでしょうか。"
+},
+{
+  id:15, hasIssue:false, cat:"none", issueTitle:"標準的な降圧薬開始処方(適正)",
+  pt:{age:"52歳", sex:"男", info:[["診断","高血圧症(初診)"],["併用薬","なし"]]},
+  rps:[
+    {drug:"アムロジピン錠5mg 1錠", usage:"分1 朝食後 30日分"}
+  ],
+  note:"アレルギー歴なし。腎機能・肝機能に特記事項なし。",
+  point:"アムロジピン5mg/日は標準的な開始用量で問題なし。<b>問題のない処方をテンポよく通すのも監査の実力</b>。すべてを疑って照会していては業務が回らず、医師との信頼関係も損なう。「疑義の感度」と「特異度」の両方を鍛えよう。",
+  talk:""
+},
+{
+  id:16, hasIssue:true, cat:"dose", issueTitle:"週1回製剤の連日処方",
+  pt:{age:"75歳", sex:"女", info:[["診断","骨粗鬆症"],["経過","新規開始"]]},
+  rps:[
+    {drug:"アレンドロン酸錠35mg 1錠", usage:"1日1回 起床時 30日分"}
+  ],
+  note:"「朝起きたらすぐ飲むように言われた」とのこと。",
+  point:"アレンドロン酸35mg錠は<b>週1回製剤</b>。連日服用では7倍量となり、食道炎・低Ca血症等のリスク。5mg錠=連日、35mg錠=週1回という<b>規格と用法の対応</b>はビスホスホネート監査の基本。電子カルテの用法選択ミスで実際に起こりうるエラー。",
+  talk:"アレンドロン酸35mgは週1回製剤ですが、用法が1日1回・30日分となっております。週1回・4回分への変更でよろしいでしょうか。"
+},
+{
+  id:17, hasIssue:true, cat:"dup", issueTitle:"抗ヒスタミン薬の他科重複",
+  pt:{age:"45歳", sex:"女", info:[["診断","アレルギー性鼻炎(耳鼻科)"],["併用薬","お薬手帳参照"]]},
+  rps:[
+    {drug:"ビラノア錠20mg 1錠", usage:"分1 空腹時(就寝前) 30日分"}
+  ],
+  note:"お薬手帳:皮膚科より蕁麻疹に対し<b>ルパフィン錠10mg</b>(継続中)。",
+  point:"ビラスチンとルパタジンで<b>第2世代抗ヒスタミン薬が他科重複</b>。眠気・倦怠感等の副作用が増強しうる。蕁麻疹では抗ヒスタミン薬の増量・併用が意図的に行われることもあるため、<b>頭ごなしに「中止」ではなく意図確認</b>の形で照会するのがスマート。",
+  talk:"皮膚科からルパフィンが継続処方されています。ビラノアと抗ヒスタミン薬が重複いたしますが、併用のご意図か確認させていただけますでしょうか。"
+},
+{
+  id:18, hasIssue:true, cat:"formal", issueTitle:"徐放錠への粉砕指示",
+  pt:{age:"80歳", sex:"男", info:[["診断","高血圧症"],["特記","胃瘻あり・在宅(簡易懸濁依頼)"]]},
+  rps:[
+    {drug:"アダラートCR錠40mg 1錠 【粉砕】", usage:"分1 朝 30日分"}
+  ],
+  note:"在宅訪問対象の患者。簡易懸濁法での投与を家族が希望。",
+  point:"アダラートCRは徐放性製剤で<b>粉砕・簡易懸濁不可</b>。徐放構造が壊れると急激な血中濃度上昇→過度の降圧の恐れ。アムロジピンOD錠など<b>剤形・薬剤の変更提案</b>まで添えて照会すると通りやすい。簡易懸濁の可否確認は在宅監査の必須スキル。",
+  talk:"アダラートCRは徐放錠のため粉砕・簡易懸濁に適しません。アムロジピンOD錠等への変更をご検討いただけますでしょうか。"
+},
+{
+  id:19, hasIssue:false, cat:"none", issueTitle:"DOACの通常用量(適正)",
+  pt:{age:"67歳", sex:"男", info:[["診断","非弁膜症性心房細動"],["検査値","CCr 65 mL/min / 体重70kg"]]},
+  rps:[
+    {drug:"イグザレルト錠15mg 1錠", usage:"分1 朝食後 30日分"}
+  ],
+  note:"循環器内科の継続処方。検査値は薬局で把握済み。",
+  point:"リバーロキサバン(心房細動)は<b>CCr 50以上で15mg/日が通常用量</b>(CCr 15〜49で10mgに減量)。「DOACだからとりあえず減量では?」と反射的に疑う前に、<b>減量基準と腎機能を照合</b>する。DOAC4剤の減量基準はそれぞれ異なるため、確認できる仕組みを手元に持つこと。",
+  talk:""
+},
+{
+  id:20, hasIssue:true, cat:"dose", issueTitle:"小児カルボシステインの過量(製剤量の取り違え疑い)",
+  pt:{age:"3歳", sex:"女", info:[["体重","13.0 kg"],["診断","急性気管支炎"]]},
+  rps:[
+    {drug:"ムコダインDS50% 1日1.5g(カルボシステインとして750mg)", usage:"分3 毎食後 5日分"}
+  ],
+  note:"併用薬なし。",
+  point:"カルボシステインは<b>1回10mg/kg・1日3回</b>が目安。13kgなら1日約390mg=<b>DS50%で約0.78g</b>であり、1.5gは約2倍。背景として<b>「成分量のつもりで製剤量を入力」する取り違え</b>が頻発する。小児散剤は必ずmg/kgで逆算し、製剤量⇔成分量を意識して監査する。",
+  talk:"ムコダインDSについてです。体重13kgですと1日0.78g程度が目安ですが、1.5gのご指示となっております。成分量とのお間違いがないか、ご確認をお願いできますでしょうか。"
+},
+{
+  id:21, hasIssue:true, cat:"inter", issueTitle:"タダラフィル×硝酸薬(併用禁忌)",
+  pt:{age:"69歳", sex:"男", info:[["診断","前立腺肥大症(泌尿器科)"],["併用薬","お薬手帳参照"]]},
+  rps:[
+    {drug:"ザルティア錠5mg 1錠", usage:"分1 朝食後 30日分"}
+  ],
+  note:"お薬手帳:循環器内科より<b>ニトロペン舌下錠0.3mg(発作時頓用)</b>が継続処方されている。",
+  point:"ザルティア(タダラフィル)はPDE5阻害薬であり、<b>硝酸薬(ニトログリセリン等)と併用禁忌</b>。併用で過度の血圧低下を起こしうる。前立腺肥大の適応名で処方されるため、ED治療薬と同成分であることを見落としやすい。<b>頓用の硝酸薬も「併用薬」</b>として扱うのがポイント。",
+  talk:"ニトロペン舌下錠を頓用でお持ちの患者さんです。ザルティアは硝酸薬と併用禁忌に該当いたしますので、処方のご変更をご検討いただけますでしょうか。"
+},
+{
+  id:22, hasIssue:true, cat:"dose", issueTitle:"腎機能低下時のレボフロキサシン用量",
+  pt:{age:"79歳", sex:"男", info:[["診断","肺炎(外来治療)"],["検査値","推算CCr 約35 mL/min"]]},
+  rps:[
+    {drug:"クラビット錠500mg 1錠", usage:"分1 朝食後 7日分"}
+  ],
+  note:"検査値は病院からの情報提供書で把握。",
+  point:"レボフロキサシンは腎排泄型で、<b>CCr 20〜50では「初日500mg、2日目以降250mg/日」</b>へ減量する。500mgを7日間継続すると過量となり、痙攣・アキレス腱障害等のリスクが高まる。抗菌薬の腎機能調整は「初日量と維持量が異なる」パターンに注意。",
+  talk:"クラビットについてです。推算CCrが35程度の患者さんですので、初日500mg・2日目以降250mgへの減量が添付文書上の目安となります。ご変更をご検討いただけますでしょうか。"
+},
+{
+  id:23, hasIssue:true, cat:"dup", issueTitle:"P-CABとPPIの他科重複",
+  pt:{age:"58歳", sex:"女", info:[["診断","逆流性食道炎(消化器内科)"],["併用薬","お薬手帳参照"]]},
+  rps:[
+    {drug:"タケキャブ錠20mg 1錠", usage:"分1 朝食後 30日分"}
+  ],
+  note:"お薬手帳:整形外科より<b>ランソプラゾールOD錠15mg</b>(NSAIDs併用時の胃粘膜保護として継続中)。",
+  point:"ボノプラザン(P-CAB)とランソプラゾール(PPI)は<b>いずれも胃酸分泌抑制薬で作用が重複</b>する。「タケキャブはPPIではないから別物」と考えるのは誤り。整形外科の胃薬は機械的に処方が続いていることも多く、一本化の確認が必要。",
+  talk:"整形外科からランソプラゾールが継続処方されています。タケキャブと酸分泌抑制薬が重複いたしますので、整理のご相談をさせていただけますでしょうか。"
+},
+{
+  id:24, hasIssue:true, cat:"contra", issueTitle:"アスピリン喘息既往へのNSAIDs(禁忌)",
+  pt:{age:"47歳", sex:"女", info:[["主訴","頭痛(内科)"],["既往","気管支喘息(NSAIDsで発作歴あり)"]]},
+  rps:[
+    {drug:"ロキソプロフェン錠60mg 1錠", usage:"頭痛時頓用 10回分"}
+  ],
+  note:"既往は投薬時の聞き取りで判明。「以前、痛み止めで息が苦しくなったことがある」とのこと。",
+  point:"<b>アスピリン喘息(NSAIDs過敏喘息)の既往にはNSAIDs全般が禁忌</b>。重篤な喘息発作を誘発する。COX-1阻害が機序のため、ロキソプロフェンでも起こる。アセトアミノフェン(高用量は避ける)等への変更を相談。<b>「痛み止めで息苦しくなった」という患者の何気ない一言</b>を拾えるかが監査の分かれ目。",
+  talk:"NSAIDsで喘息発作の既往がある患者さんです。ロキソプロフェンは禁忌に該当いたしますので、カロナール等への変更をご検討いただけますでしょうか。"
+},
+{
+  id:25, hasIssue:true, cat:"formal", issueTitle:"湿布薬の処方枚数制限超過",
+  pt:{age:"66歳", sex:"女", info:[["診断","変形性膝関節症・腰痛症(整形外科)"],["特記","処方箋に理由記載なし"]]},
+  rps:[
+    {drug:"ロキソプロフェンNaテープ100mg 10袋(70枚)", usage:"1日1回 膝・腰に貼付 30日分"}
+  ],
+  note:"処方箋の備考欄に枚数に関する記載はない。",
+  point:"湿布薬は<b>1処方につき63枚が上限</b>(令和4年度改定〜)。63枚を超える場合は処方箋に<b>理由の記載が必要</b>。記載がなければ疑義照会の対象。臨床的な危険は小さいが、返戻・査定に直結する「制度監査」の代表例。枚数×袋数の掛け算ミスにも注意。",
+  talk:"湿布薬は1処方63枚までとなっており、70枚のご処方で理由のご記載がございません。63枚への変更、または理由のご記載をお願いできますでしょうか。"
+},
+{
+  id:26, hasIssue:false, cat:"none", issueTitle:"オキシコドン徐放+レスキュー設定(適正)",
+  pt:{age:"74歳", sex:"男", info:[["診断","膵癌・がん性疼痛(在宅)"],["経過","ベース増量後、疼痛コントロール良好"]]},
+  rps:[
+    {drug:"オキシコンチンTR錠10mg 1回1錠", usage:"1日2回 12時間毎 14日分"},
+    {drug:"オキノーム散2.5mg", usage:"疼痛時頓用 1日4回まで 10回分"}
+  ],
+  note:"麻薬処方箋の記載要件(患者住所・麻薬施用者免許番号)は確認済み。",
+  point:"ベースのオキシコドン20mg/日に対し、レスキューは<b>1日量の1/8〜1/4(2.5〜5mg)</b>が目安であり、オキノーム2.5mgは適正な設定。同一成分でベースとレスキューを組むのも標準的。麻薬監査では<b>換算・レスキュー比・処方箋記載要件</b>の3点をルーチンで確認し、適正ならためらわず通す。",
+  talk:""
+},
+{
+  id:27, hasIssue:true, cat:"dose", issueTitle:"オピオイド導入時の開始用量過量",
+  pt:{age:"81歳", sex:"女", info:[["診断","肺癌・がん性疼痛"],["経過","オピオイドは今回が初回(ナイーブ)"]]},
+  rps:[
+    {drug:"オキシコンチンTR錠20mg 1回1錠", usage:"1日2回 12時間毎 14日分"},
+    {drug:"オキノーム散5mg", usage:"疼痛時頓用 10回分"}
+  ],
+  note:"お薬手帳・薬歴上、これまでオピオイド(弱・強とも)の使用歴なし。",
+  point:"オピオイド未使用(ナイーブ)患者への経口オキシコドンは<b>10〜20mg/日から開始</b>が原則。40mg/日での導入は過量で、高齢者では傾眠・呼吸抑制・せん妄のリスクが高い。<b>「初回かどうか」を薬歴と手帳で確認する</b>のが麻薬監査の第一歩。レスキュー5mgもベース見直しに連動して再設定を。",
+  talk:"オピオイドが初回の患者さんです。オキシコンチンTRは10〜20mg/日からの開始が原則かと存じますが、40mg/日のご指示です。開始用量のご確認をお願いできますでしょうか。"
+},
+{
+  id:28, hasIssue:true, cat:"inter", issueTitle:"ニューキノロン×酸化マグネシウムの同時服用",
+  pt:{age:"61歳", sex:"女", info:[["診断","膀胱炎(内科)"],["併用薬","お薬手帳参照"]]},
+  rps:[
+    {drug:"レボフロキサシン錠500mg 1錠", usage:"分1 朝食後 3日分"}
+  ],
+  note:"お薬手帳:同院より<b>酸化マグネシウム錠330mg 3錠 分3(毎食後・継続中)</b>。朝は同時服用になる。",
+  point:"ニューキノロンはマグネシウム・アルミニウム・カルシウム・鉄等と<b>キレートを形成し吸収が大きく低下</b>する(禁忌ではないが効果減弱で治療失敗のリスク)。中止ではなく<b>服用時間を2時間程度ずらす</b>提案が現実的。疑義照会または服薬指導+トレーシングレポートでの対応を判断する。",
+  talk:"酸化マグネシウムを毎食後で服用中の患者さんです。レボフロキサシンと同時服用ですと吸収が低下いたしますので、服用時間をずらす用法(例:抗菌薬を起床時など)に変更してもよろしいでしょうか。"
+},
+{
+  id:29, hasIssue:true, cat:"contra", issueTitle:"心不全既往へのピオグリタゾン(禁忌)",
+  pt:{age:"70歳", sex:"男", info:[["診断","2型糖尿病"],["既往","心不全(昨年入院歴あり)"]]},
+  rps:[
+    {drug:"ピオグリタゾン錠15mg 1錠", usage:"分1 朝食後 30日分(新規追加)"}
+  ],
+  note:"心不全の入院歴は薬歴・聞き取りで把握。循環器の処方(利尿薬等)を他院で継続中。",
+  point:"ピオグリタゾンは体液貯留作用があり、<b>心不全患者および心不全の既往歴のある患者に禁忌</b>。浮腫・心不全増悪のリスク。糖尿病薬の追加時は<b>心・腎・肝と病歴のスクリーニング</b>をセットで行う。DPP-4阻害薬やSGLT2阻害薬(病態により)等への変更を相談。",
+  talk:"昨年心不全でご入院歴のある患者さんです。ピオグリタゾンは心不全既往に禁忌となっておりますので、他剤へのご変更をご検討いただけますでしょうか。"
+},
+{
+  id:30, hasIssue:false, cat:"none", issueTitle:"ホクナリンテープの年齢規格(適正)",
+  pt:{age:"3歳", sex:"男", info:[["体重","14 kg"],["診断","急性気管支炎"]]},
+  rps:[
+    {drug:"ホクナリンテープ1mg 1日1枚", usage:"1日1回 胸部・背部または上腕部に貼付 5日分"}
+  ],
+  note:"併用薬なし。前回(2歳時)は0.5mgが処方されていた。",
+  point:"ツロブテロールテープは<b>0.5〜3歳未満:0.5mg/3〜9歳未満:1mg/9歳以上:2mg</b>。3歳になったため1mgへの増量は規格どおりで適正。「前回と違う=疑義」ではなく、<b>年齢・体重の変化に応じた規格変更</b>かをまず確認する。小児は成長とともに用量が動くのが正常。",
+  talk:""
+}
+];
+
+/* ===== 状態 ===== */
+let order = [];
+let idx = 0;
+let results = []; // {caseId, outcome: 'correct'|'partial'|'miss'|'over', cat}
+let pendingJudge = null;
+
+const $ = (id) => document.getElementById(id);
+
+/* ===== 画面遷移 ===== */
+function show(screenId){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(screenId).classList.add("active");
+  $("progressRow").style.visibility = (screenId==="screenQuiz") ? "visible" : "hidden";
+  window.scrollTo({top:0});
+}
+
+/* ===== スタート ===== */
+function init(){
+  const best = loadBest();
+  if(best){
+    $("bestScore").textContent = `自己ベスト:${best.score}点(${best.rank})`;
+  }
+  $("startBtn").addEventListener("click", startQuiz);
+  $("btnGigi").addEventListener("click", ()=>onJudge(true));
+  $("btnPass").addEventListener("click", ()=>onJudge(false));
+}
+
+function startQuiz(){
+  order = CASES.map((_,i)=>i);
+  shuffle(order);
+  idx = 0;
+  results = [];
+  show("screenQuiz");
+  renderCase();
+}
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+}
+
+/* ===== 出題描画 ===== */
+function renderCase(){
+  const c = CASES[order[idx]];
+  $("progressLabel").textContent = `第 ${idx+1} 問 / ${CASES.length}`;
+  $("progressFill").style.width = `${(idx)/CASES.length*100}%`;
+
+  const infoCells = [
+    `<div><span class="label">患 者</span>${c.pt.age}・${c.pt.sex}性</div>`,
+    ...c.pt.info.map(([l,v])=>`<div><span class="label">${l}</span>${v}</div>`)
+  ];
+  if(infoCells.length % 2 === 1) infoCells.push(`<div><span class="label">&nbsp;</span>&nbsp;</div>`);
+
+  const rps = c.rps.map((r,i)=>`
+    <div class="rp">
+      <div class="rp-no">Rp${i+1}</div>
+      <div class="rp-main"><div class="drug">${r.drug}</div><div class="usage">${r.usage}</div></div>
+    </div>`).join("");
+
+  $("rxCard").innerHTML = `
+    <div class="rx-head"><span class="title">処方箋</span><span class="no">No.${String(c.id).padStart(3,"0")} | 模擬症例</span></div>
+    <div class="rx-patient">${infoCells.join("")}</div>
+    <div class="rx-body">${rps}</div>
+    ${c.note ? `<div class="rx-note"><b>備考・聞き取り:</b> ${c.note}</div>` : ""}
+  `;
+
+  $("judgeRow").style.display = "flex";
+  $("categoryPanel").classList.remove("show");
+  $("explainArea").innerHTML = "";
+  pendingJudge = null;
+}
+
+/* ===== 判定 ===== */
+function onJudge(isGigi){
+  const c = CASES[order[idx]];
+  if(isGigi){
+    pendingJudge = "gigi";
+    $("judgeRow").style.display = "none";
+    stamp("shu","疑義");
+    renderCats();
+  }else{
+    pendingJudge = "pass";
+    $("judgeRow").style.display = "none";
+    stamp("pass","監査済");
+    finalize(null);
+  }
+}
+
+function renderCats(){
+  const grid = $("catGrid");
+  grid.innerHTML = "";
+  Object.entries(CATS).forEach(([key,label])=>{
+    const b = document.createElement("button");
+    b.className = "cat-btn";
+    b.textContent = label;
+    b.addEventListener("click", ()=>{
+      $("categoryPanel").classList.remove("show");
+      finalize(key);
+    });
+    grid.appendChild(b);
+  });
+  $("categoryPanel").classList.add("show");
+}
+
+function stamp(kind, text){
+  const el = document.createElement("div");
+  el.className = `stamp ${kind}`;
+  el.textContent = text;
+  $("rxCard").appendChild(el);
+}
+
+function finalize(chosenCat){
+  const c = CASES[order[idx]];
+  let outcome;
+  if(pendingJudge === "gigi"){
+    if(!c.hasIssue) outcome = "over";
+    else outcome = (chosenCat === c.cat) ? "correct" : "partial";
+  }else{
+    outcome = c.hasIssue ? "miss" : "correct";
+  }
+  results.push({caseId:c.id, outcome, cat:c.cat, chosenCat});
+  renderExplain(c, outcome, chosenCat);
+}
+
+const OUTCOME_META = {
+  correct:{cls:"correct", mark:"◎", label:"正解"},
+  partial:{cls:"partial", mark:"○", label:"部分正解 ── 疑義の着眼点が違いました"},
+  miss:{cls:"miss", mark:"✕", label:"見逃し ── この処方には疑義がありました"},
+  over:{cls:"over", mark:"△", label:"過剰疑義 ── この処方は通過できる処方でした"}
+};
+
+function renderExplain(c, outcome, chosenCat){
+  const m = OUTCOME_META[outcome];
+  const catLabel = c.hasIssue ? CATS[c.cat] : "問題なし(監査通過)";
+  let html = `
+    <div class="result-banner ${m.cls}"><span class="mark">${m.mark}</span>${m.label}</div>
+    <div class="explain">
+      <h4>${c.hasIssue ? "疑義のポイント" : "この処方が通過できる理由"}</h4>
+      <span class="tag">${catLabel}</span>
+      ${c.hasIssue ? `<p><b>${c.issueTitle}</b></p>` : ""}
+      <p>${c.point}</p>`;
+  if(outcome === "partial"){
+    html += `<p style="color:var(--ink-soft);font-size:13px;">あなたの選択:「${CATS[chosenCat]}」── 違和感に気づけたのは正解。着眼カテゴリまで合わせられると照会がスムーズになります。</p>`;
+  }
+  if(c.hasIssue && c.talk){
+    html += `<h4>こう伝える</h4><div class="talk-bubble">${c.talk}</div>`;
+  }
+  html += `</div>
+    <button class="next-btn" id="nextBtn">${idx === CASES.length-1 ? "結果を見る" : "次の処方箋へ"}</button>`;
+  $("explainArea").innerHTML = html;
+  $("nextBtn").addEventListener("click", next);
+  $("nextBtn").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function next(){
+  idx++;
+  if(idx >= CASES.length){
+    renderResult();
+  }else{
+    renderCase();
+  }
+}
+
+/* ===== 結果 ===== */
+function calcScore(){
+  let score = 0;
+  results.forEach(r=>{
+    if(r.outcome==="correct") score += 1;
+    else if(r.outcome==="partial") score += 0.5;
+  });
+  return score;
+}
+
+function rankOf(score){
+  const r = score / CASES.length;
+  if(r >= 0.9)  return {name:"師範", seal:"師範", msg:"鋭い監査眼。後輩の指導もお任せできるレベルです。"};
+  if(r >= 0.75) return {name:"師範代", seal:"師範代", msg:"あと一歩で師範。見逃したカテゴリを復習しましょう。"};
+  if(r >= 0.55) return {name:"一人前", seal:"一人前", msg:"基本は身についています。配合剤と腎機能に磨きを。"};
+  if(r >= 0.35) return {name:"見習い", seal:"見習", msg:"伸びしろ十分。まずは禁忌と日数制限を固めましょう。"};
+  return {name:"入門者", seal:"入門", msg:"ここからがスタート。解説を読み直してもう一周!"};
+}
+
+function renderResult(){
+  const score = calcScore();
+  const rank = rankOf(score);
+  const count = {correct:0, partial:0, miss:0, over:0};
+  results.forEach(r=>count[r.outcome]++);
+
+  // カテゴリ別正答率(問題なしケースは「通過判断」として集計)
+  const catAgg = {};
+  Object.keys(CATS).forEach(k=>catAgg[k]={ok:0,total:0});
+  catAgg["none"]={ok:0,total:0};
+  results.forEach(r=>{
+    const key = r.cat;
+    catAgg[key].total++;
+    if(r.outcome==="correct") catAgg[key].ok++;
+    else if(r.outcome==="partial") catAgg[key].ok += 0.5;
+  });
+  const catRows = [...Object.entries(CATS), ["none","問題なし(通過判断)"]]
+    .filter(([k])=>catAgg[k].total>0)
+    .map(([k,label])=>{
+      const pct = Math.round(catAgg[k].ok/catAgg[k].total*100);
+      return `<div class="cat-row"><span class="name">${label}</span><div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div><span class="pct">${pct}%</span></div>`;
+    }).join("");
+
+  $("finalCard").innerHTML = `
+    <div class="rank-seal">${rank.seal}</div>
+    <div class="rank-name">段位:${rank.name}</div>
+    <div class="rank-msg">${rank.msg}</div>
+    <div class="score-grid">
+      <div class="score-cell c-correct"><div class="num">${formatScore(score)}</div><div class="lbl">スコア / ${CASES.length}</div></div>
+      <div class="score-cell c-miss"><div class="num">${count.miss}</div><div class="lbl">見逃し</div></div>
+      <div class="score-cell c-over"><div class="num">${count.over}</div><div class="lbl">過剰疑義</div></div>
+    </div>
+    <div class="cat-stats">
+      <h3>カテゴリ別 正答率</h3>
+      ${catRows}
+    </div>
+    <button class="share-btn" id="shareBtn">結果をXでシェア</button>
+    <button class="retry-btn" id="retryBtn">もう一度監査する(出題順シャッフル)</button>
+  `;
+  $("shareBtn").addEventListener("click", ()=>{
+    const text = `処方監査道場で${CASES.length}枚の処方箋を監査。スコア ${formatScore(score)}/${CASES.length}【段位:${rank.name}】 見逃し${count.miss}・過剰疑義${count.over}`;
+    const url = "https://aocap-yaku.github.io/kansa-dojo/";
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${encodeURIComponent("処方監査道場,薬剤師")}`,"_blank");
+  });
+  $("retryBtn").addEventListener("click", startQuiz);
+
+  saveBest(score, rank.name);
+  $("progressFill").style.width = "100%";
+  show("screenResult");
+}
+
+function formatScore(s){ return Number.isInteger(s) ? String(s) : s.toFixed(1); }
+
+/* ===== ベストスコア保存 ===== */
+function loadBest(){
+  try{
+    const raw = localStorage.getItem("kansaDojoBest");
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+function saveBest(score, rankName){
+  try{
+    const best = loadBest();
+    if(!best || score > best.score){
+      localStorage.setItem("kansaDojoBest", JSON.stringify({score, rank:rankName, date:new Date().toISOString().slice(0,10)}));
+    }
+  }catch(e){ /* localStorage不可の環境でも動作継続 */ }
+}
+
+init();
+
+</script>
+</body>
+</html>

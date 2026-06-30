@@ -2,92 +2,94 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>処方監査道場 | 新人薬剤師のための監査トレーニング</title>
-<meta name="description" content="新人薬剤師向けの処方監査トレーニングアプリ。20の模擬処方箋で疑義照会の目を鍛える。">
+<meta name="description" content="新人薬剤師向けの処方監査トレーニングアプリ。50の模擬処方箋で疑義照会の目を鍛える。今日の一問・スコア履歴つき。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Yuji+Syuku&display=swap" rel="stylesheet">
 <style>
 :root{
-  --desk:#232B36;        /* 監査台の濃紺 */
-  --desk-2:#2C3645;
-  --paper:#FFFFFF;       /* 処方箋の紙 */
-  --paper-line:#C9D2DC;  /* 帳票の罫線 */
-  --ink:#1C2430;         /* 墨色の本文 */
-  --ink-soft:#5A6577;
-  --shu:#C9402F;         /* 朱肉(疑義) */
-  --shu-deep:#A93325;
-  --pass:#2F7D5B;        /* 監査済の緑 */
-  --pass-deep:#256348;
-  --gold:#C9A23F;        /* 段位の金 */
-  --muted:#8A93A3;
-  --radius:10px;
+  --sumi:#1A1714; --sumi-2:#262019; --kuwa:#2B211A;
+  --paper:#FBF7EF; --paper-2:#F3ECDD; --paper-line:#D8CDB5;
+  --ink:#241E17; --ink-soft:#6B5E4B;
+  --shu:#C03B2B; --shu-deep:#9E2E20;
+  --ai:#2E4A5B; --matcha:#5C7148; --matcha-deep:#465838;
+  --gold:#B89234; --gold-soft:#CDA84A; --muted:#9A8E78;
+  --radius:12px;
   --font-display:'Zen Old Mincho', serif;
-  --font-body:'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', sans-serif;
+  --font-brush:'Yuji Syuku', serif;
+  --font-body:'Zen Kaku Gothic New','Hiragino Kaku Gothic ProN',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{-webkit-text-size-adjust:100%;}
 body{
-  font-family:var(--font-body);
-  background:var(--desk);
-  background-image:linear-gradient(180deg, #1D242E 0%, var(--desk) 30%, var(--desk) 100%);
-  color:var(--ink);
-  min-height:100vh;
-  line-height:1.7;
+  font-family:var(--font-body);color:var(--ink);min-height:100vh;line-height:1.7;
+  background-color:var(--sumi);
+  background-image:
+    linear-gradient(180deg, rgba(20,17,14,.55), rgba(20,17,14,.78)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='104' viewBox='0 0 60 104'%3E%3Cg fill='none' stroke='%23b89234' stroke-width='1' stroke-opacity='0.32'%3E%3Cpath d='M30 0 L30 26 M30 26 L7.5 39 M30 26 L52.5 39 M7.5 39 L7.5 65 M52.5 39 L52.5 65 M30 52 L7.5 39 M30 52 L52.5 39 M30 52 L30 78 M7.5 65 L30 78 M52.5 65 L30 78 M7.5 65 L0 78 M52.5 65 L60 78 M30 78 L7.5 91 M30 78 L52.5 91 M30 104 L30 78 M0 0 L7.5 13 L0 26 M60 0 L52.5 13 L60 26 M0 78 L7.5 91 L0 104 M60 78 L52.5 91 L60 104'/%3E%3C/g%3E%3C/svg%3E");
+  background-attachment:fixed;
 }
-.wrap{max-width:680px;margin:0 auto;padding:16px 14px 60px;}
-
-/* ===== ヘッダー ===== */
-header{display:flex;align-items:center;gap:12px;padding:14px 2px 18px;}
-.logo-seal{
-  width:46px;height:46px;flex:none;
-  border:2.5px solid var(--shu);border-radius:8px;
-  color:var(--shu);
-  font-family:var(--font-display);font-weight:900;font-size:24px;
-  display:flex;align-items:center;justify-content:center;
-  transform:rotate(-6deg);
-  background:rgba(201,64,47,.06);
-}
-.logo-text h1{
-  font-family:var(--font-display);font-weight:900;
-  color:#F3F5F8;font-size:24px;letter-spacing:.12em;line-height:1.2;
-}
-.logo-text p{color:var(--muted);font-size:12px;letter-spacing:.06em;margin-top:2px;}
-
-/* ===== 進捗 ===== */
-.progress-row{display:flex;align-items:center;gap:10px;margin:4px 0 14px;color:#C7CEDA;font-size:13px;}
-.progress-bar{flex:1;height:6px;background:var(--desk-2);border-radius:3px;overflow:hidden;}
-.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--shu),#E0684F);border-radius:3px;transition:width .4s ease;}
-
-/* ===== カード共通 ===== */
+.wrap{max-width:680px;margin:0 auto;padding:16px 14px calc(60px + env(safe-area-inset-bottom));}
+.washi{background:var(--paper);border-radius:var(--radius);box-shadow:0 12px 34px rgba(0,0,0,.42),0 2px 6px rgba(0,0,0,.3);position:relative;overflow:hidden;}
+header{display:flex;align-items:center;gap:13px;padding:16px 4px;}
+.logo-seal{width:50px;height:50px;flex:none;border:2.5px solid var(--shu);border-radius:9px;color:var(--shu);font-family:var(--font-brush);font-size:30px;display:flex;align-items:center;justify-content:center;transform:rotate(-5deg);background:rgba(192,59,43,.08);box-shadow:0 0 0 3px rgba(192,59,43,.12);}
+.logo-text h1{font-family:var(--font-brush);color:#F7F1E3;font-size:27px;letter-spacing:.1em;line-height:1.15;text-shadow:0 2px 8px rgba(0,0,0,.4);}
+.logo-text p{color:#D8CDB5;font-size:11.5px;letter-spacing:.08em;margin-top:3px;}
+.progress-row{display:flex;align-items:center;gap:10px;margin:2px 2px 14px;color:#E4DBC8;font-size:13px;}
+.progress-bar{flex:1;height:7px;background:rgba(0,0,0,.35);border-radius:4px;overflow:hidden;border:1px solid rgba(184,146,52,.3);}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--shu),var(--gold-soft));border-radius:4px;transition:width .4s ease;}
 .screen{display:none;}
 .screen.active{display:block;animation:fadeUp .35s ease both;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
-@media (prefers-reduced-motion: reduce){
-  .screen.active{animation:none;}
-  .stamp{animation:none !important;}
-  .progress-fill{transition:none;}
+@media (prefers-reduced-motion:reduce){.screen.active{animation:none;}.stamp{animation:none!important;}.progress-fill{transition:none;}}
+.hero{padding:34px 22px 28px;text-align:center;position:relative;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(180deg, rgba(251,247,239,.62), rgba(243,236,221,.82)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40' viewBox='0 0 80 40'%3E%3Cg fill='none' stroke='%23c03b2b' stroke-width='1.4' stroke-opacity='0.45'%3E%3Cpath d='M0 40 A20 20 0 0 1 40 40 A20 20 0 0 1 80 40 M-40 40 A20 20 0 0 1 0 40 M40 40 A20 20 0 0 1 80 40'/%3E%3Cpath d='M10 40 A10 10 0 0 1 30 40 A10 10 0 0 1 50 40 A10 10 0 0 1 70 40 M-10 40 A10 10 0 0 1 10 40 M70 40 A10 10 0 0 1 90 40' stroke-opacity='0.3'/%3E%3C/g%3E%3C/svg%3E");
+  background-size:auto, 80px 40px;
+  border-bottom:3px double var(--gold);
 }
-
-/* ===== 処方箋カード ===== */
-.rx-card{
-  position:relative;
-  background:var(--paper);
-  border-radius:var(--radius);
-  box-shadow:0 10px 30px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
-  overflow:hidden;
-}
-.rx-head{
-  display:flex;justify-content:space-between;align-items:baseline;
-  padding:14px 18px 10px;border-bottom:2px solid var(--ink);
-}
-.rx-head .title{font-family:var(--font-display);font-weight:700;font-size:18px;letter-spacing:.4em;}
+.hero>*{position:relative;z-index:1;}
+.hero .brush-title{font-family:var(--font-brush);font-size:36px;letter-spacing:.14em;color:var(--sumi);text-shadow:0 1px 0 rgba(251,247,239,.9), 0 2px 6px rgba(192,59,43,.18);}
+.hero .sub{font-size:13px;color:var(--ink-soft);margin-top:9px;font-weight:500;}
+.hero .divider{width:70px;height:3px;background:linear-gradient(90deg,var(--shu),var(--gold));margin:16px auto 0;border-radius:2px;}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--paper-line);border-top:1px solid var(--paper-line);border-bottom:1px solid var(--paper-line);}
+.summary .cell{background:var(--paper);padding:14px 6px;text-align:center;}
+.summary .num{font-family:var(--font-display);font-weight:900;font-size:23px;color:var(--shu-deep);}
+.summary .num.gold{color:var(--gold);}
+.summary .num.ai{color:var(--ai);}
+.summary .lbl{font-size:10.5px;color:var(--ink-soft);letter-spacing:.04em;margin-top:1px;}
+.modes{padding:18px 18px 6px;}
+.mode-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:1.5px solid var(--paper-line);border-radius:var(--radius);background:var(--paper-2);padding:15px 16px;margin-bottom:11px;cursor:pointer;transition:border-color .15s,transform .12s,box-shadow .15s;font-family:var(--font-body);}
+.mode-card:hover{border-color:var(--shu);box-shadow:0 4px 14px rgba(0,0,0,.08);}
+.mode-card:active{transform:scale(.99);}
+.mode-card:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+.mode-icon{width:46px;height:46px;flex:none;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-brush);font-size:25px;color:#fff;}
+.mode-icon.today{background:linear-gradient(135deg,var(--shu),var(--shu-deep));}
+.mode-icon.r10{background:linear-gradient(135deg,var(--ai),#1F3543);}
+.mode-icon.all{background:linear-gradient(135deg,var(--matcha),var(--matcha-deep));}
+.mode-body{flex:1;min-width:0;}
+.mode-body .t{font-family:var(--font-display);font-weight:700;font-size:16.5px;color:var(--sumi);}
+.mode-body .d{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+.mode-body .badge{display:inline-block;font-size:10.5px;font-weight:700;color:#fff;background:var(--shu);border-radius:20px;padding:1px 9px;margin-top:5px;letter-spacing:.03em;}
+.mode-body .badge.done{background:var(--matcha);}
+.mode-body .badge.streak{background:var(--gold);color:var(--sumi);}
+.mode-arrow{color:var(--muted);font-size:20px;flex:none;}
+.top-actions{padding:6px 18px 22px;}
+.ghost-btn{display:block;width:100%;padding:13px;border:1.5px solid var(--ink-soft);border-radius:var(--radius);background:transparent;color:var(--ink);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:background .15s;}
+.ghost-btn:hover{background:var(--paper-2);}
+.ghost-btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+.rx-card{position:relative;background:var(--paper);border-radius:var(--radius);box-shadow:0 12px 34px rgba(0,0,0,.42);overflow:hidden;}
+.today-banner{display:flex;align-items:center;gap:8px;padding:9px 16px;background:linear-gradient(135deg,var(--shu),var(--shu-deep));color:#fff;font-size:13px;font-weight:700;}
+.today-banner .label{font-family:var(--font-display);letter-spacing:.1em;}
+.today-banner .date{margin-left:auto;font-size:11.5px;opacity:.92;font-weight:400;}
+.rx-head{display:flex;justify-content:space-between;align-items:baseline;padding:15px 18px 11px;border-bottom:2px solid var(--ink);}
+.rx-head .title{font-family:var(--font-brush);font-size:22px;letter-spacing:.3em;}
 .rx-head .no{font-size:11px;color:var(--ink-soft);letter-spacing:.05em;}
-.rx-patient{
-  display:grid;grid-template-columns:1fr 1fr;gap:0;
-  border-bottom:1px solid var(--paper-line);font-size:13px;
-}
+.rx-patient{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--paper-line);font-size:13px;}
 .rx-patient div{padding:8px 18px;border-bottom:1px solid var(--paper-line);}
 .rx-patient div:nth-child(odd){border-right:1px solid var(--paper-line);}
 .rx-patient .label{display:block;font-size:10px;color:var(--ink-soft);letter-spacing:.1em;}
@@ -96,196 +98,117 @@ header{display:flex;align-items:center;gap:12px;padding:14px 2px 18px;}
 .rx-body .rp-no{flex:none;font-family:var(--font-display);font-weight:700;color:var(--ink-soft);font-size:13px;padding-top:2px;}
 .rx-body .rp-main .drug{font-weight:700;}
 .rx-body .rp-main .usage{color:var(--ink-soft);font-size:13px;}
-.rx-note{
-  margin:4px 18px 16px;padding:10px 12px;
-  background:#F4F6F8;border-left:3px solid var(--muted);
-  font-size:12.5px;color:var(--ink-soft);border-radius:0 6px 6px 0;
-}
+.rx-note{margin:4px 18px 16px;padding:10px 12px;background:var(--paper-2);border-left:3px solid var(--muted);font-size:12.5px;color:var(--ink-soft);border-radius:0 6px 6px 0;}
 .rx-note b{color:var(--ink);}
-
-/* ===== 判子スタンプ ===== */
-.stamp{
-  position:absolute;right:18px;bottom:14px;
-  width:84px;height:84px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;text-align:center;
-  font-family:var(--font-display);font-weight:900;font-size:20px;line-height:1.15;
-  transform:rotate(-12deg) scale(1);
-  pointer-events:none;
-  animation:stampIn .35s cubic-bezier(.2,2.2,.4,1) both;
-  mix-blend-mode:multiply;
-}
-.stamp.shu{border:3.5px solid var(--shu);color:var(--shu);background:rgba(201,64,47,.05);box-shadow:inset 0 0 0 1.5px rgba(201,64,47,.35);}
-.stamp.pass{border:3.5px solid var(--pass);color:var(--pass);background:rgba(47,125,91,.05);box-shadow:inset 0 0 0 1.5px rgba(47,125,91,.35);}
-@keyframes stampIn{
-  0%{opacity:0;transform:rotate(-12deg) scale(2.1);}
-  100%{opacity:1;transform:rotate(-12deg) scale(1);}
-}
-
-/* ===== 判定ボタン ===== */
+.stamp{position:absolute;right:18px;bottom:14px;width:86px;height:86px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--font-brush);font-size:23px;line-height:1.1;transform:rotate(-12deg) scale(1);pointer-events:none;animation:stampIn .35s cubic-bezier(.2,2.2,.4,1) both;mix-blend-mode:multiply;}
+.stamp.shu{border:3.5px solid var(--shu);color:var(--shu);background:rgba(192,59,43,.05);box-shadow:inset 0 0 0 1.5px rgba(192,59,43,.35);}
+.stamp.pass{border:3.5px solid var(--matcha);color:var(--matcha);background:rgba(92,113,72,.05);box-shadow:inset 0 0 0 1.5px rgba(92,113,72,.35);}
+@keyframes stampIn{0%{opacity:0;transform:rotate(-12deg) scale(2.1);}100%{opacity:1;transform:rotate(-12deg) scale(1);}}
 .judge-row{display:flex;gap:12px;margin-top:16px;}
-.judge-btn{
-  flex:1;padding:16px 8px;border:none;border-radius:var(--radius);
-  font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:.15em;
-  color:#fff;cursor:pointer;transition:transform .12s ease, filter .12s ease;
-}
-.judge-btn:active{transform:scale(.97);}
+.judge-btn{flex:1;padding:17px 8px;border:none;border-radius:var(--radius);font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:.12em;color:#fff;cursor:pointer;transition:transform .12s ease,filter .12s ease;box-shadow:0 4px 0 rgba(0,0,0,.18);}
+.judge-btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.18);}
 .judge-btn:focus-visible{outline:3px solid #fff;outline-offset:2px;}
-.judge-btn .sub{display:block;font-family:var(--font-body);font-size:11px;font-weight:400;letter-spacing:.05em;opacity:.85;margin-top:2px;}
-.judge-btn.giginashi{background:var(--pass);}
-.judge-btn.giginashi:hover{filter:brightness(1.08);}
+.judge-btn .sub{display:block;font-family:var(--font-body);font-size:11px;font-weight:400;letter-spacing:.03em;opacity:.9;margin-top:2px;}
+.judge-btn.giginashi{background:var(--matcha);}
 .judge-btn.gigiari{background:var(--shu);}
-.judge-btn.gigiari:hover{filter:brightness(1.08);}
-
-/* ===== カテゴリ選択 ===== */
 .category-panel{margin-top:16px;display:none;}
 .category-panel.show{display:block;animation:fadeUp .3s ease both;}
-.category-panel h3{color:#E8EBF0;font-size:14px;font-weight:500;margin-bottom:10px;}
+.category-panel h3{color:#EFE7D5;font-size:14px;font-weight:500;margin-bottom:10px;}
 .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.cat-btn{
-  padding:13px 10px;border:1.5px solid #4A5568;border-radius:8px;
-  background:var(--desk-2);color:#DFE4EC;font-size:13.5px;font-weight:500;
-  cursor:pointer;text-align:center;transition:border-color .15s, background .15s;
-  font-family:var(--font-body);
-}
-.cat-btn:hover{border-color:var(--shu);background:#36414F;}
+.cat-btn{padding:14px 10px;border:1.5px solid rgba(184,146,52,.4);border-radius:9px;background:rgba(43,33,26,.85);color:#EFE7D5;font-size:13.5px;font-weight:500;cursor:pointer;text-align:center;transition:border-color .15s,background .15s;font-family:var(--font-body);}
+.cat-btn:hover{border-color:var(--shu);background:rgba(60,46,37,.95);}
 .cat-btn:focus-visible{outline:3px solid #fff;outline-offset:2px;}
-
-/* ===== 解説 ===== */
-.result-banner{
-  margin-top:16px;padding:12px 16px;border-radius:var(--radius);
-  font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:.08em;
-  display:flex;align-items:center;gap:10px;color:#fff;
-}
+.result-banner{margin-top:16px;padding:13px 16px;border-radius:var(--radius);font-family:var(--font-display);font-weight:700;font-size:16.5px;letter-spacing:.05em;display:flex;align-items:center;gap:10px;color:#fff;}
 .result-banner .mark{font-size:22px;}
-.result-banner.correct{background:var(--pass);}
-.result-banner.partial{background:var(--gold);color:#3A3014;}
+.result-banner.correct{background:var(--matcha);}
+.result-banner.partial{background:var(--gold);color:#332810;}
 .result-banner.miss{background:var(--shu-deep);}
-.result-banner.over{background:#5A6577;}
-.explain{
-  margin-top:10px;background:#FDFDFB;border-radius:var(--radius);
-  padding:16px 18px;box-shadow:0 6px 18px rgba(0,0,0,.3);
-}
-.explain h4{
-  font-family:var(--font-display);font-size:14px;letter-spacing:.1em;
-  color:var(--shu-deep);border-bottom:1px solid var(--paper-line);
-  padding-bottom:6px;margin:14px 0 8px;
-}
+.result-banner.over{background:#6B5E4B;}
+.explain{margin-top:10px;background:var(--paper);border-radius:var(--radius);padding:16px 18px;box-shadow:0 8px 22px rgba(0,0,0,.34);}
+.explain h4{font-family:var(--font-display);font-size:14px;letter-spacing:.08em;color:var(--shu-deep);border-bottom:1px solid var(--paper-line);padding-bottom:6px;margin:14px 0 8px;}
 .explain h4:first-child{margin-top:0;}
 .explain p{font-size:14px;margin-bottom:6px;}
-.explain .tag{
-  display:inline-block;font-size:11px;font-weight:700;color:#fff;
-  background:var(--ink-soft);border-radius:4px;padding:2px 8px;margin-bottom:8px;letter-spacing:.05em;
-}
-.talk-bubble{
-  background:#EAF3EE;border-radius:14px 14px 14px 4px;
-  padding:12px 14px;font-size:13.5px;position:relative;margin-top:6px;
-  border:1px solid #CBE0D4;
-}
-.talk-bubble::before{content:"📞 疑義照会トーク例";display:block;font-size:11px;font-weight:700;color:var(--pass-deep);margin-bottom:4px;letter-spacing:.05em;}
-.next-btn{
-  display:block;width:100%;margin-top:16px;padding:15px;
-  border:none;border-radius:var(--radius);cursor:pointer;
-  background:#F3F5F8;color:var(--ink);font-family:var(--font-display);
-  font-weight:700;font-size:16px;letter-spacing:.2em;
-  transition:transform .12s ease;
-}
+.explain .tag{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--ink-soft);border-radius:4px;padding:2px 8px;margin-bottom:8px;letter-spacing:.05em;}
+.talk-bubble{background:#EAF0E6;border-radius:14px 14px 14px 4px;padding:12px 14px;font-size:13.5px;position:relative;margin-top:6px;border:1px solid #CFDDC4;}
+.talk-bubble::before{content:"\1F4DE 疑義照会トーク例";display:block;font-size:11px;font-weight:700;color:var(--matcha-deep);margin-bottom:4px;letter-spacing:.05em;}
+.next-btn{display:block;width:100%;margin-top:16px;padding:16px;border:none;border-radius:var(--radius);cursor:pointer;background:var(--sumi);color:var(--paper);font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:.18em;transition:transform .12s ease,filter .15s;}
+.next-btn:hover{filter:brightness(1.15);}
 .next-btn:active{transform:scale(.98);}
 .next-btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
-
-/* ===== スタート画面 ===== */
-.start-card{background:var(--paper);border-radius:var(--radius);padding:26px 22px;box-shadow:0 10px 30px rgba(0,0,0,.35);}
-.start-card h2{font-family:var(--font-display);font-weight:900;font-size:21px;letter-spacing:.1em;margin-bottom:12px;}
-.start-card p{font-size:14px;color:var(--ink-soft);margin-bottom:10px;}
-.start-card ul{font-size:13.5px;color:var(--ink);padding-left:1.3em;margin-bottom:14px;}
-.start-card li{margin-bottom:4px;}
-.best-score{font-size:13px;color:var(--pass-deep);font-weight:700;margin-bottom:6px;}
-.start-btn{
-  display:block;width:100%;padding:16px;border:none;border-radius:var(--radius);
-  background:var(--shu);color:#fff;font-family:var(--font-display);
-  font-weight:900;font-size:18px;letter-spacing:.3em;cursor:pointer;
-  transition:filter .15s, transform .12s;
-}
-.start-btn:hover{filter:brightness(1.08);}
-.start-btn:active{transform:scale(.98);}
-.start-btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
-
-/* ===== 結果画面 ===== */
-.final-card{background:var(--paper);border-radius:var(--radius);padding:26px 22px;box-shadow:0 10px 30px rgba(0,0,0,.35);text-align:center;}
-.rank-seal{
-  width:120px;height:120px;margin:6px auto 10px;border-radius:50%;
-  border:4px solid var(--shu);color:var(--shu);
-  font-family:var(--font-display);font-weight:900;font-size:30px;
-  display:flex;align-items:center;justify-content:center;
-  transform:rotate(-8deg);line-height:1.2;text-align:center;
-  background:rgba(201,64,47,.04);
-}
-.final-card .rank-name{font-family:var(--font-display);font-weight:900;font-size:22px;letter-spacing:.15em;margin-bottom:2px;}
-.final-card .rank-msg{font-size:13px;color:var(--ink-soft);margin-bottom:16px;}
-.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
-.score-cell{background:#F4F6F8;border-radius:8px;padding:10px 4px;}
+.final-card{padding:28px 22px;text-align:center;}
+.rank-seal{width:124px;height:124px;margin:6px auto 10px;border-radius:50%;border:4px solid var(--shu);color:var(--shu);font-family:var(--font-brush);font-size:30px;display:flex;align-items:center;justify-content:center;transform:rotate(-8deg);line-height:1.15;text-align:center;background:rgba(192,59,43,.04);box-shadow:0 0 0 4px rgba(192,59,43,.1);}
+.final-card .rank-name{font-family:var(--font-display);font-weight:900;font-size:22px;letter-spacing:.12em;margin-bottom:2px;}
+.final-card .rank-msg{font-size:13px;color:var(--ink-soft);margin-bottom:18px;}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;}
+.score-cell{background:var(--paper-2);border-radius:9px;padding:11px 4px;}
 .score-cell .num{font-family:var(--font-display);font-weight:900;font-size:24px;}
 .score-cell .lbl{font-size:11px;color:var(--ink-soft);}
-.score-cell.c-correct .num{color:var(--pass);}
+.score-cell.c-correct .num{color:var(--matcha);}
 .score-cell.c-miss .num{color:var(--shu);}
 .score-cell.c-over .num{color:var(--ink-soft);}
 .cat-stats{text-align:left;margin-bottom:18px;}
-.cat-stats h3{font-family:var(--font-display);font-size:14px;letter-spacing:.1em;margin-bottom:8px;border-bottom:1px solid var(--paper-line);padding-bottom:5px;}
+.cat-stats h3{font-family:var(--font-display);font-size:14px;letter-spacing:.08em;margin-bottom:8px;border-bottom:1px solid var(--paper-line);padding-bottom:5px;}
 .cat-row{display:flex;align-items:center;gap:8px;font-size:12.5px;margin-bottom:6px;}
 .cat-row .name{width:9.5em;flex:none;color:var(--ink);}
-.cat-row .bar{flex:1;height:8px;background:#E7EBEF;border-radius:4px;overflow:hidden;}
-.cat-row .bar-fill{height:100%;background:var(--pass);border-radius:4px;}
+.cat-row .bar{flex:1;height:9px;background:var(--paper-2);border-radius:5px;overflow:hidden;}
+.cat-row .bar-fill{height:100%;background:var(--matcha);border-radius:5px;}
 .cat-row .pct{width:3.2em;text-align:right;color:var(--ink-soft);flex:none;}
-.share-btn{
-  display:block;width:100%;padding:13px;margin-bottom:10px;border:none;border-radius:var(--radius);
-  background:var(--ink);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-body);
-}
-.share-btn:focus-visible,.retry-btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
-.retry-btn{
-  display:block;width:100%;padding:13px;border:1.5px solid var(--ink);border-radius:var(--radius);
-  background:transparent;color:var(--ink);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-body);
-}
-footer{margin-top:28px;text-align:center;color:var(--muted);font-size:11px;line-height:1.8;}
-footer a{color:#AEB7C6;}
-
+.share-btn{display:block;width:100%;padding:14px;margin-bottom:10px;border:none;border-radius:var(--radius);background:var(--ink);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-body);}
+.retry-btn,.home-btn{display:block;width:100%;padding:13px;margin-bottom:10px;border:1.5px solid var(--ink);border-radius:var(--radius);background:transparent;color:var(--ink);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-body);}
+.share-btn:focus-visible,.retry-btn:focus-visible,.home-btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+.hist-card{padding:24px 20px;}
+.hist-card h2{font-family:var(--font-display);font-weight:900;font-size:20px;letter-spacing:.08em;margin-bottom:4px;text-align:center;}
+.hist-card .sub{font-size:12.5px;color:var(--ink-soft);text-align:center;margin-bottom:18px;}
+.chart-wrap{background:var(--paper-2);border-radius:var(--radius);padding:16px 12px 10px;margin-bottom:16px;}
+.hist-empty{text-align:center;color:var(--ink-soft);font-size:13px;padding:30px 10px;}
+.hist-list{font-size:12.5px;}
+.hist-item{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--paper-line);}
+.hist-item .date{width:5.5em;flex:none;color:var(--ink-soft);}
+.hist-item .mode{width:5em;flex:none;font-size:11px;color:var(--ai);font-weight:700;}
+.hist-item .sc{font-family:var(--font-display);font-weight:700;flex:1;}
+.hist-item .rk{font-size:11.5px;color:var(--shu-deep);font-weight:700;}
+footer{margin-top:28px;text-align:center;color:#C2B89F;font-size:11px;line-height:1.9;}
+footer a{color:#D8CDB5;}
 @media (max-width:430px){
-  .rx-head .title{letter-spacing:.25em;font-size:16px;}
+  .rx-head .title{letter-spacing:.18em;}
   .cat-grid{grid-template-columns:1fr;}
-  .judge-btn{font-size:15.5px;letter-spacing:.1em;}
+  .judge-btn{font-size:15.5px;letter-spacing:.08em;}
+  .hero .brush-title{font-size:29px;}
+  .logo-text h1{font-size:24px;}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-
 <header>
   <div class="logo-seal" aria-hidden="true">監</div>
   <div class="logo-text">
     <h1>処方監査道場</h1>
-    <p>新人薬剤師のための監査トレーニング 全30問</p>
+    <p>新人薬剤師のための監査トレーニング 全50問</p>
   </div>
 </header>
-
-<div class="progress-row" id="progressRow" style="visibility:hidden;">
-  <span id="progressLabel">第 1 問 / 20</span>
+<div class="progress-row" id="progressRow" style="display:none;">
+  <span id="progressLabel">第 1 問 / 50</span>
   <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 </div>
-
-<!-- スタート画面 -->
-<section class="screen active" id="screenStart">
-  <div class="start-card">
-    <h2>監査の「目」を鍛える、30枚の処方箋。</h2>
-    <p>実際の調剤現場で遭遇しうる模擬処方箋を1枚ずつ監査します。あなたの判断は——</p>
-    <ul>
-      <li><b>疑義あり</b>:処方医への確認が必要と判断 → 理由のカテゴリを選択</li>
-      <li><b>監査通過</b>:このまま調剤して問題なしと判断</li>
-    </ul>
-    <p>「見逃し」だけでなく「過剰疑義」(問題ない処方への不要な照会)もカウントされます。すべての処方を疑えばよいわけではない——それが監査の難しさです。</p>
-    <p class="best-score" id="bestScore"></p>
-    <button class="start-btn" id="startBtn">監査開始</button>
+<section class="screen active" id="screenTop">
+  <div class="washi">
+    <div class="hero">
+      <div class="brush-title">処方監査道場</div>
+      <div class="sub">模擬処方箋を監査し、疑義の「目」を鍛える。</div>
+      <div class="divider"></div>
+    </div>
+    <div class="summary" id="summary"></div>
+    <div class="modes" id="modes"></div>
+    <div class="top-actions">
+      <button class="ghost-btn" id="histBtn">スコア履歴・成長グラフを見る</button>
+    </div>
   </div>
+  <footer>
+    処方監査道場 v2.0 | 教育用の模擬症例です。実際の判断は最新の添付文書・ガイドラインをご確認ください。<br>
+    © aocap-yaku
+  </footer>
 </section>
-
-<!-- 出題画面 -->
 <section class="screen" id="screenQuiz">
   <div class="rx-card" id="rxCard"></div>
   <div class="judge-row" id="judgeRow">
@@ -298,22 +221,15 @@ footer a{color:#AEB7C6;}
   </div>
   <div id="explainArea"></div>
 </section>
-
-<!-- 結果画面 -->
 <section class="screen" id="screenResult">
-  <div class="final-card" id="finalCard"></div>
+  <div class="washi"><div class="final-card" id="finalCard"></div></div>
 </section>
-
-<footer>
-  処方監査道場 v1.0 | 教育用の模擬症例です。実際の判断は最新の添付文書・ガイドラインをご確認ください。<br>
-  © aocap-yaku
-</footer>
-
+<section class="screen" id="screenHist">
+  <div class="washi"><div class="hist-card" id="histCard"></div></div>
+</section>
 </div>
 <script>
-/* ===== 処方監査道場 v1.0 ===== */
 "use strict";
-
 const CATS = {
   dose:   "用法・用量(腎機能含む)",
   inter:  "相互作用・併用禁忌",
@@ -340,8 +256,8 @@ const CASES = [
     {drug:"バルトレックス錠500mg 1回2錠", usage:"1日3回 毎食後 7日分"}
   ],
   note:"検査結果は本人持参。ふらつきの訴えあり。",
-  point:"バラシクロビル(帯状疱疹)は<b>CCr 10〜29で「1回1000mg・1日1回」</b>へ減量が必要。常用量のままでは<b>アシクロビル脳症</b>(意識障害・ふらつき・幻覚)のリスク。高齢者の抗ウイルス薬は腎機能チェックが監査の最重要ポイント。",
-  talk:"バルトレックスについてです。推算CCrが28程度の患者さんですので、添付文書上は1回1000mg・1日1回への減量が目安となります。用量変更のご検討をお願いできますでしょうか。"
+  point:"帯状疱疹のバラシクロビル常用量はCCr≧50で1回1000mgを8時間毎(=3000mg/日)。本処方の1回1000mg×1日3回はこの常用量だが、<b>CCrが低下するほど投与間隔をあけて減量</b>する必要がある(添付文書:CCr30〜49で1000mgを12時間毎、CCr10〜29ではさらに減量し1000mgを1日1回が目安)。推算CCr約28では減量対象で、常用量のままでは<b>アシクロビル脳症</b>(意識障害・ふらつき・幻覚)のリスク。高齢者の抗ウイルス薬は腎機能チェックが監査の最重要ポイント。",
+  talk:"バルトレックスについてです。推算CCrが28程度ですので、添付文書上は減量(1回1000mgを1日1回程度)が目安となります。用量・投与間隔のご確認をお願いできますでしょうか。"
 },
 {
   id:3, hasIssue:true, cat:"inter", issueTitle:"スボレキサント×クラリスロマイシン(併用禁忌)",
@@ -628,57 +544,332 @@ const CASES = [
   note:"併用薬なし。前回(2歳時)は0.5mgが処方されていた。",
   point:"ツロブテロールテープは<b>0.5〜3歳未満:0.5mg/3〜9歳未満:1mg/9歳以上:2mg</b>。3歳になったため1mgへの増量は規格どおりで適正。「前回と違う=疑義」ではなく、<b>年齢・体重の変化に応じた規格変更</b>かをまず確認する。小児は成長とともに用量が動くのが正常。",
   talk:""
+},
+{
+  id:31, hasIssue:true, cat:"dup", issueTitle:"吸入ステロイドの重複",
+  pt:{age:"58歳", sex:"女", info:[["診断","気管支喘息(呼吸器内科)"],["併用薬","お薬手帳参照"]]},
+  rps:[
+    {drug:"レルベア200エリプタ30吸入", usage:"1日1回 1吸入 30日分"}
+  ],
+  note:"お薬手帳:同医より<b>パルミコート吸入液0.5mg 1日2回</b>(継続中)。",
+  point:"レルベアにはフルチカゾンフランカルボン酸エステル(ICS)が含まれており、ブデソニド(パルミコート)と<b>吸入ステロイドが重複</b>する。ステロイド過量により嗄声・口腔カンジダ・全身性副作用のリスク。配合吸入薬は「中身がICS+LABA」と分解して考える癖を。デバイス変更の経過措置で重複が残るケースも多い。",
+  talk:"パルミコート吸入液が継続処方されている患者さんです。レルベアと吸入ステロイドが重複いたしますので、整理のご検討をお願いできますでしょうか。"
+},
+{
+  id:32, hasIssue:false, cat:"none", issueTitle:"喘息のコントローラー+SABA(適正)",
+  pt:{age:"32歳", sex:"男", info:[["診断","気管支喘息"],["経過","コントロール良好も季節性に悪化"]]},
+  rps:[
+    {drug:"シムビコートタービュヘイラー60吸入", usage:"1日2回 1回1吸入 30日分"},
+    {drug:"サルタノールインヘラー100µg", usage:"発作時頓用 1日4回まで 1本"}
+  ],
+  note:"季節の変わり目に発作が増えるためレリーバーを追加。",
+  point:"コントローラー(ICS/LABA)+発作時レリーバー(SABA)は<b>喘息治療の標準的な組み合わせ</b>。「同じ吸入が2つあるから重複」と短絡しない。発作時の使用回数増加は受診勧奨のサインとして指導につなげる。SABA使用頻度の聞き取りは薬剤師の重要な役割。",
+  talk:""
+},
+{
+  id:33, hasIssue:true, cat:"contra", issueTitle:"プロスタグランジン点眼の妊婦処方",
+  pt:{age:"31歳", sex:"女", info:[["診断","原発開放隅角緑内障"],["特記","妊娠20週(産科通院中)"]]},
+  rps:[
+    {drug:"キサラタン点眼液0.005% 1本", usage:"1日1回 両眼 30日分"}
+  ],
+  note:"妊娠は薬剤師の聞き取りで判明。眼科医に未申告の可能性。",
+  point:"ラタノプロスト(キサラタン)等のプロスタグランジン関連薬点眼は<b>妊婦への投与は治療上の有益性が危険性を上回ると判断される場合に限る</b>(添付文書)。子宮収縮等の懸念があり、原則として他剤を優先する。<b>点眼薬は「外用だから安全」は誤り</b>、特に眼科と産科の連携不足は監査ポイント。",
+  talk:"患者さんが妊娠20週とのことです。キサラタンは妊婦への投与に注意が必要なため、点眼薬の選択についてご相談させていただけますでしょうか。"
+},
+{
+  id:34, hasIssue:false, cat:"none", issueTitle:"緑内障点眼の機序違い併用(適正)",
+  pt:{age:"68歳", sex:"男", info:[["診断","原発開放隅角緑内障"],["経過","ベース点眼の効果不十分で追加"]]},
+  rps:[
+    {drug:"ルミガン点眼液0.03% 1本", usage:"1日1回 夜 両眼 30日分"},
+    {drug:"チモプトール点眼液0.5% 1本", usage:"1日2回 朝夕 両眼 30日分"}
+  ],
+  note:"前回処方からの追加。患者は点眼間隔・順序を眼科で指導済み。",
+  point:"PG関連薬+β遮断薬の併用は<b>緑内障治療の標準的なステップアップ</b>であり、機序が異なるため重複ではない。点眼の順序と<b>5分以上の間隔</b>を指導するのが薬剤師の役割。「点眼が2種類=何か違和感」と短絡せず、機序と処方意図で判断する。",
+  talk:""
+},
+{
+  id:35, hasIssue:true, cat:"dose", issueTitle:"経口ステロイドの急な中止指示",
+  pt:{age:"54歳", sex:"女", info:[["診断","関節リウマチ"],["経過","プレドニン10mg/日を約3か月継続中"]]},
+  rps:[
+    {drug:"プレドニン錠5mg 2錠", usage:"分1 朝食後 14日分(処方箋備考に「次回より中止」)"}
+  ],
+  note:"処方箋に「次回からプレドニン中止」と記載あり。漸減指示なし。",
+  point:"プレドニゾロン10mg/日を3か月継続後の<b>急な中止は副腎不全のリスク</b>(易疲労・血圧低下・ショック等)。通常は2.5〜5mg単位での漸減が必要。「終了」の一文だけで処方意図が不明な場合は<b>漸減プロトコルの確認</b>を行う。長期ステロイドの中止指示は監査の最重要ポイント。",
+  talk:"プレドニンを約3か月継続中の患者さんですので、急な中止ですと副腎不全のリスクがございます。漸減での中止か、継続のご意図か確認させていただけますでしょうか。"
+},
+{
+  id:36, hasIssue:true, cat:"dup", issueTitle:"漢方薬の甘草成分重複",
+  pt:{age:"75歳", sex:"女", info:[["診断","こむら返り・便秘"],["併用薬","他院処方含む"]]},
+  rps:[
+    {drug:"芍薬甘草湯 2.5g 1包", usage:"こむら返り時頓用 14回分"}
+  ],
+  note:"併用:<b>小青竜湯 2.5g 1日3回</b>(耳鼻科より継続)、<b>甘草湯 2.5g 1日1回</b>(かかりつけ医より)。",
+  point:"複数の漢方で<b>甘草の合計が1日6g超</b>に達する可能性。<b>偽アルドステロン症(低K血症・浮腫・血圧上昇)</b>のリスク。複数科から漢方が出ている高齢者では、含有甘草量を計算する習慣を。一般に1日2.5g以上の甘草摂取で要注意。",
+  talk:"複数の漢方薬で甘草成分が重複しております。偽アルドステロン症のリスクがあるため、整理のご相談をお願いできますでしょうか。"
+},
+{
+  id:37, hasIssue:true, cat:"contra", issueTitle:"高血圧合併への麻黄含有漢方",
+  pt:{age:"62歳", sex:"男", info:[["診断","感冒(内科)"],["既往","高血圧症(降圧薬服用中)・前立腺肥大症"]]},
+  rps:[
+    {drug:"葛根湯 2.5g 1包", usage:"1日3回 食前 5日分"}
+  ],
+  note:"併用:アムロジピン5mg服用中。前立腺肥大で泌尿器科通院。",
+  point:"葛根湯には<b>麻黄(エフェドリン)</b>が含まれ、<b>高血圧症・心疾患・前立腺肥大症は慎重投与</b>(添付文書)。交感神経刺激により血圧上昇・尿閉のリスク。高齢男性への麻黄含有漢方(葛根湯・小青竜湯・麻黄湯・越婢加朮湯等)は要注意。麻黄を含まない<b>桂枝湯への変更</b>等を相談。",
+  talk:"高血圧と前立腺肥大のある患者さんへの葛根湯です。麻黄が含まれるため慎重投与となっておりますが、桂枝湯等への変更はいかがでしょうか。"
+},
+{
+  id:38, hasIssue:true, cat:"contra", issueTitle:"授乳婦へのテトラサイクリン系",
+  pt:{age:"29歳", sex:"女", info:[["診断","ニキビ(皮膚科)"],["特記","現在 生後3か月児に母乳栄養中"]]},
+  rps:[
+    {drug:"ミノマイシン錠100mg 1錠", usage:"分1 朝食後 14日分"}
+  ],
+  note:"授乳状況は薬剤師の聞き取りで判明。",
+  point:"テトラサイクリン系は<b>乳児の歯牙黄染・骨発育抑制のリスク</b>があり授乳婦への投与は推奨されない。皮膚科ニキビ治療では<b>マクロライド系等への変更</b>で対応可能なケースが多い。授乳期女性の処方では「現在授乳中か」の確認を習慣に。",
+  talk:"授乳中の患者さんへのミノマイシンです。乳児への影響が懸念されますので、マクロライド系等への変更をご検討いただけますでしょうか。"
+},
+{
+  id:39, hasIssue:true, cat:"contra", issueTitle:"妊活中女性へのリチウム継続",
+  pt:{age:"34歳", sex:"女", info:[["診断","双極性障害(精神科)"],["特記","本人より「妊活中」との情報"]]},
+  rps:[
+    {drug:"リーマス錠200mg 2錠", usage:"分2 朝夕食後 30日分(継続)"}
+  ],
+  note:"継続処方。妊活開始は薬剤師の聞き取りで判明。",
+  point:"炭酸リチウムは<b>催奇形性(Ebstein奇形等の心奇形リスク)</b>があり、<b>妊婦に原則禁忌</b>。妊娠を希望する女性では事前の主治医相談が必須。<b>「いま妊婦ではないが妊活中」</b>の患者は監査で見落としやすい盲点。安易な中止は精神症状悪化を招くため、必ず精神科主治医と連携した形での照会を。",
+  talk:"妊活中の患者さんでリーマスを継続中です。催奇形性のリスクがあるため、主治医との計画的な変更について確認させていただけますでしょうか。"
+},
+{
+  id:40, hasIssue:true, cat:"dose", issueTitle:"乳児への抗ヒスタミン薬の年齢禁忌",
+  pt:{age:"生後5か月", sex:"男", info:[["体重","7.2 kg"],["診断","乳児湿疹(小児科)"]]},
+  rps:[
+    {drug:"ザイザルシロップ0.05% 1回1.25mL", usage:"1日1回 就寝前 14日分"}
+  ],
+  note:"皮膚症状への止痒目的での処方。",
+  point:"レボセチリジン(ザイザル)シロップは<b>生後6か月以上から適応</b>(添付文書)。5か月児には適応外。<b>小児抗ヒスタミン薬は年齢区分が細かい</b>(6か月〜・1歳〜・2歳〜・6歳〜等)。「小児用シロップだから安全」は誤り。年齢区分の確認は小児監査の基本。",
+  talk:"ザイザルシロップは生後6か月以上の適応となっております。5か月の患者さんですので、適応のある他剤へのご変更をご検討いただけますでしょうか。"
+},
+{
+  id:41, hasIssue:true, cat:"dose", issueTitle:"バンコマイシンTDM未実施での長期投与",
+  pt:{age:"71歳", sex:"男", info:[["診断","MRSA感染症(外来抗菌薬療法)"],["検査値","SCr 1.6 / CCr 約38"]]},
+  rps:[
+    {drug:"バンコマイシン塩酸塩点滴静注用0.5g", usage:"1日2回(12時間毎) 14日分"}
+  ],
+  note:"TDMの記載・採血指示が処方箋・診療情報提供書にいずれもなし。",
+  point:"バンコマイシンは<b>TDM(治療薬物モニタリング)が強く推奨</b>される薬剤(トラフ値10〜20µg/mL目標、AUC400〜600 mg·h/L目標)。腎機能低下例では特に必須。<b>外来でTDM未実施のまま長期投与</b>は腎障害・治療失敗のリスク。「採血指示があるか」「次回受診日が適切か」を監査で確認する。",
+  talk:"バンコマイシンはTDMが推奨される薬剤です。腎機能低下のある患者さんですので、トラフ採血のご指示について確認させていただけますでしょうか。"
+},
+{
+  id:42, hasIssue:false, cat:"none", issueTitle:"SGLT2阻害薬の適応内処方(適正)",
+  pt:{age:"65歳", sex:"男", info:[["診断","2型糖尿病・慢性心不全"],["検査値","eGFR 42 mL/min/1.73m²"]]},
+  rps:[
+    {drug:"ジャディアンス錠10mg 1錠", usage:"分1 朝食後 30日分"}
+  ],
+  note:"循環器内科と内分泌内科の併診。心不全での適応も取得済み。",
+  point:"エンパグリフロジン(ジャディアンス)は<b>2型糖尿病ではeGFR 30以上、慢性心不全ではeGFR 20以上で投与可能</b>。本症例はeGFR 42で適応内、心不全への有用性も確立。<b>「SGLT2=腎機能注意=eGFR低下例は危ない」と短絡しない</b>。薬剤ごと・適応ごとに基準が異なるため、最新の添付文書とガイドラインで判断。",
+  talk:""
+},
+{
+  id:43, hasIssue:true, cat:"inter", issueTitle:"MTX×NSAIDsの高齢腎機能低下例での併用",
+  pt:{age:"73歳", sex:"女", info:[["診断","関節リウマチ・腰痛(同医処方)"],["検査値","CCr 42"]]},
+  rps:[
+    {drug:"リウマトレックスカプセル2mg 4錠", usage:"週1回 朝食後 4回分"},
+    {drug:"ロキソプロフェン錠60mg 3錠", usage:"分3 毎食後 14日分"}
+  ],
+  note:"MTX週8mgで継続中、今回より腰痛にNSAIDs追加。",
+  point:"メトトレキサートとNSAIDsは<b>併用注意</b>(MTXの腎排泄が低下し血中濃度上昇 → 骨髄抑制・粘膜障害リスク)。特に<b>高齢・腎機能低下例</b>では危険性が増す。RA診療では併用されることもあるが、用量・腎機能・必要性を勘案。<b>アセトアミノフェン優先・短期投与・血液毒性のモニタリング</b>を提案。",
+  talk:"MTX服用中の高齢・腎機能低下の患者さんへのNSAIDs併用です。血中濃度上昇のリスクがあるため、用量・期間のご確認をお願いできますでしょうか。"
+},
+{
+  id:44, hasIssue:true, cat:"formal", issueTitle:"新医薬品(発売1年未満)の14日処方制限超過",
+  pt:{age:"52歳", sex:"男", info:[["診断","2型糖尿病(内科)"],["経過","新規薬剤を開始"]]},
+  rps:[
+    {drug:"【新薬・薬価収載から半年の経口血糖降下薬(仮)】 1錠", usage:"分1 朝食後 30日分"}
+  ],
+  note:"当該薬剤は薬価収載の翌月初日から1年を経過していない新医薬品。",
+  point:"<b>薬価収載の翌月初日から起算して1年を経過していない新医薬品は、原則1回14日分が投与上限</b>。安全性情報の蓄積が十分でないための制度的制限で、薬効に関わらず適用される。30日処方はそのまま通せない。<b>新薬には14日制限がかかる</b>ことを忘れると返戻につながる。なお向精神薬の日数制限は別系統で、トリアゾラム(ハルシオン)等は30日・ジアゼパム等は90日・それ以外は14日と薬剤ごとに異なる点も整理しておくとよい。",
+  talk:"こちらは発売1年未満の新医薬品のため、投与日数の上限が14日分となっております。14日分への変更をお願いできますでしょうか。"
+},
+{
+  id:45, hasIssue:true, cat:"dup", issueTitle:"スタチン系の他科重複",
+  pt:{age:"66歳", sex:"男", info:[["診断","脂質異常症(内科)"],["併用薬","お薬手帳参照"]]},
+  rps:[
+    {drug:"クレストール錠2.5mg 1錠", usage:"分1 朝食後 30日分"}
+  ],
+  note:"お薬手帳:循環器内科より<b>リピトール錠10mg</b>(継続中)。",
+  point:"ロスバスタチンとアトルバスタチンで<b>スタチン系HMG-CoA還元酵素阻害薬が重複</b>。横紋筋融解症・肝障害のリスク増大、有益性なし。<b>同効薬の併用は配合剤の中身重複と並ぶ重複ミスの王道パターン</b>。薬効分類で「○○○系」が同じなら重複を疑う癖を。一本化・どちらかへの集約を提案。",
+  talk:"循環器内科よりリピトールが継続処方されています。スタチン系の重複となりますので、どちらに集約するかご相談させていただけますでしょうか。"
+},
+{
+  id:46, hasIssue:false, cat:"none", issueTitle:"ステロイド計画的漸減(適正)",
+  pt:{age:"60歳", sex:"女", info:[["診断","ANCA関連血管炎(膠原病内科)"],["経過","寛解導入後の漸減期"]]},
+  rps:[
+    {drug:"プレドニン錠5mg 2.5錠", usage:"分1 朝食後 14日分"}
+  ],
+  note:"漸減スケジュール:15mg→12.5mg(本処方)→10mg→7.5mg…の計画的減量中。処方箋備考に「次回10mgへ漸減予定」と明記。",
+  point:"長期ステロイドの<b>計画的漸減</b>は標準治療。「中止」ではなく「次回減量予定」の備考があれば適正。<b>急な中止は危険だが、計画的漸減は適正</b>──この区別ができることが監査の質。患者には漸減の意義(急な中止が危険なこと)を説明し、自己中断を防ぐ服薬指導を。",
+  talk:""
+},
+{
+  id:47, hasIssue:true, cat:"dose", issueTitle:"小児ザイザルの倍量処方",
+  pt:{age:"4歳", sex:"女", info:[["体重","15 kg"],["診断","アレルギー性鼻炎"]]},
+  rps:[
+    {drug:"ザイザルシロップ0.05% 1回5mL(レボセチリジンとして2.5mg)", usage:"1日2回 朝・就寝前 14日分"}
+  ],
+  note:"小児科処方。",
+  point:"レボセチリジン(ザイザル)シロップの小児用量は、添付文書上<b>1歳以上7歳未満:1回2.5mL(1.25mg)を1日2回=1日2.5mg</b>(7歳以上15歳未満で1回5mL(2.5mg)を1日2回=1日5mg)。本症例は4歳なので1日2.5mgが適正で、本処方の1日5mg(1回2.5mg×2回)は<b>7歳以上の用量に相当し約2倍</b>。年齢区分(6か月〜・1歳〜・7歳〜)ごとに1回量が変わるため、<b>「成分量の年齢区分取り違え」</b>は処方・調剤双方で起こりやすい。",
+  talk:"ザイザルシロップは1歳以上7歳未満で1日2.5mg(1回1.25mgを2回)が用量です。4歳の患者さんで1日5mgのご指示となっておりますので、用量のご確認をお願いできますでしょうか。"
+},
+{
+  id:48, hasIssue:true, cat:"inter", issueTitle:"ワルファリン×ボリコナゾールの相互作用",
+  pt:{age:"68歳", sex:"男", info:[["診断","深在性真菌症(感染症内科)"],["併用薬","ワーファリン1mg×3錠 継続中"]]},
+  rps:[
+    {drug:"ブイフェンド錠200mg 1日2回(初日のみ400mg×2)", usage:"分2 食後 14日分"}
+  ],
+  note:"PT-INRの管理目標2.0-3.0。前回INR 2.4。",
+  point:"ボリコナゾール(ブイフェンド)はCYP2C9を強く阻害し、<b>ワルファリンのINRを著しく上昇</b>させる。併用禁忌ではないが「併用注意・重大な相互作用」。<b>INRの綿密なモニタリングとワルファリン減量</b>が必要。「禁忌でなければ通す」ではなく、必要なフォロー体制があるかを確認するのが監査の役目。",
+  talk:"ワーファリン服用中の患者さんへのブイフェンドです。INR上昇のリスクが高いため、INRモニタリングのご指示やワーファリン減量について確認させていただけますでしょうか。"
+},
+{
+  id:49, hasIssue:false, cat:"none", issueTitle:"光線過敏症リスク薬の継続処方(適正・指導で対応)",
+  pt:{age:"45歳", sex:"女", info:[["診断","にきび(皮膚科)"],["特記","屋内勤務・夜勤中心"]]},
+  rps:[
+    {drug:"ビブラマイシン錠100mg 1錠", usage:"分1 朝食後 28日分"}
+  ],
+  note:"前回も同処方で効果良好。屋内勤務で日中の外出は少ない。",
+  point:"ドキシサイクリンは光線過敏症のリスク薬だが、<b>屋内勤務で日光暴露が少ない患者背景なら適正処方</b>。「リスク薬=即疑義」ではなく、<b>患者背景でリスクが顕在化するかを評価</b>するのが薬剤師の専門性。注意喚起の指導を行いつつ処方は通過させる判断ができることが重要。屋外勤務者なら別判断になりうる。",
+  talk:""
+},
+{
+  id:50, hasIssue:true, cat:"formal", issueTitle:"嚥下困難患者への徐放錠(剤形不適合)",
+  pt:{age:"86歳", sex:"女", info:[["診断","パーキンソン病(神経内科)"],["特記","嚥下機能低下・施設入所中"]]},
+  rps:[
+    {drug:"レキップCR錠2mg 1錠", usage:"分1 朝食後 30日分"}
+  ],
+  note:"施設からの聞き取り:錠剤の嚥下に時間がかかり、口腔内に残ることがある。家族は「砕いて飲ませたい」と希望。",
+  point:"レキップCR(ロピニロール徐放錠)は<b>粉砕・脱カプセル不可</b>(徐放性が失われ過量となる)。嚥下困難な患者には<b>剤形そのものが不適合</b>。<b>ニュープロパッチ(貼付剤)への変更</b>等を提案。在宅・施設薬剤師は「飲める形か」「介護者が安全に投与できるか」も監査の対象。剤形変更提案は薬剤師の専門性が最も活きる介入。",
+  talk:"嚥下困難で粉砕希望のある患者さんですが、レキップCRは徐放錠のため粉砕不可です。ニュープロパッチ等の貼付剤への変更はいかがでしょうか。"
 }
 ];
 
-/* ===== 状態 ===== */
-let order = [];
-let idx = 0;
-let results = []; // {caseId, outcome: 'correct'|'partial'|'miss'|'over', cat}
-let pendingJudge = null;
+/* ===== 処方監査道場 v2.0 ロジック ===== */
+"use strict";
 
 const $ = (id) => document.getElementById(id);
+
+/* ---- 状態 ---- */
+let order = [];
+let idx = 0;
+let results = [];
+let pendingJudge = null;
+let currentMode = "all"; // 'today' | 'r10' | 'all'
+
+const MODE_META = {
+  today:{label:"今日の一問", short:"今日"},
+  r10:{label:"ランダム10問", short:"R10"},
+  all:{label:"全50問", short:"全50"}
+};
 
 /* ===== 画面遷移 ===== */
 function show(screenId){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   $(screenId).classList.add("active");
-  $("progressRow").style.visibility = (screenId==="screenQuiz") ? "visible" : "hidden";
+  $("progressRow").style.display = (screenId==="screenQuiz") ? "flex" : "none";
   window.scrollTo({top:0});
 }
 
-/* ===== スタート ===== */
-function init(){
-  const best = loadBest();
-  if(best){
-    $("bestScore").textContent = `自己ベスト:${best.score}点(${best.rank})`;
+/* ===== 日付シード(今日の一問) ===== */
+function todayKey(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+// 文字列 → 疑似乱数シード
+function seedFromString(str){
+  let h = 2166136261;
+  for(let i=0;i<str.length;i++){
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
   }
-  $("startBtn").addEventListener("click", startQuiz);
-  $("btnGigi").addEventListener("click", ()=>onJudge(true));
-  $("btnPass").addEventListener("click", ()=>onJudge(false));
+  return (h >>> 0);
+}
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
 }
 
-function startQuiz(){
-  order = CASES.map((_,i)=>i);
-  shuffle(order);
-  idx = 0;
-  results = [];
-  show("screenQuiz");
-  renderCase();
-}
-
-function shuffle(a){
+/* ===== シャッフル ===== */
+function shuffle(a, rng){
+  const r = rng || Math.random;
   for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
+    const j = Math.floor(r()*(i+1));
     [a[i],a[j]] = [a[j],a[i]];
   }
+  return a;
+}
+
+/* ===== トップ画面描画 ===== */
+function renderTop(){
+  const stats = loadStats();
+  // サマリー
+  $("summary").innerHTML = `
+    <div class="cell"><div class="num">${stats.totalPlays}</div><div class="lbl">挑戦回数</div></div>
+    <div class="cell"><div class="num gold">${stats.bestPct}%</div><div class="lbl">ベスト正答率</div></div>
+    <div class="cell"><div class="num ai">${stats.streak}</div><div class="lbl">今日の一問<br>連続日数</div></div>
+  `;
+  // 今日の一問の状態
+  const todayDone = stats.lastTodayKey === todayKey();
+  // モードカード
+  const modesHtml = [
+    {key:"today", icon:"今", cls:"today", t:"今日の一問",
+     d: "ランダムに選ばれた1問でサッと腕試し。1日1回挑戦で連続記録が伸びます。",
+     badge: todayDone ? `<span class="badge streak">🔥 ${stats.streak}日連続中</span>` : (stats.streak>0?`<span class="badge streak">🔥 ${stats.streak}日連続中</span>`:`<span class="badge">今日はまだ</span>`)},
+    {key:"r10", icon:"乱", cls:"r10", t:"ランダム10問",
+     d:"50問からランダムに10問を出題。スキマ時間の腕試しに。", badge:""},
+    {key:"all", icon:"全", cls:"all", t:"全50問",
+     d:"全症例をシャッフルで通し稽古。段位認定はこのモードが本番。", badge:""}
+  ].map(m=>`
+    <button class="mode-card" data-mode="${m.key}">
+      <div class="mode-icon ${m.cls}">${m.icon}</div>
+      <div class="mode-body">
+        <div class="t">${m.t}</div>
+        <div class="d">${m.d}</div>
+        ${m.badge}
+      </div>
+      <div class="mode-arrow">›</div>
+    </button>`).join("");
+  $("modes").innerHTML = modesHtml;
+  document.querySelectorAll(".mode-card").forEach(btn=>{
+    btn.addEventListener("click", ()=>startMode(btn.dataset.mode));
+  });
+}
+
+/* ===== モード開始 ===== */
+function startMode(mode){
+  currentMode = mode;
+  idx = 0;
+  results = [];
+  if(mode==="today"){
+    order = [Math.floor(Math.random()*CASES.length)];
+  }else if(mode==="r10"){
+    const all = CASES.map((_,i)=>i);
+    shuffle(all);
+    order = all.slice(0,10);
+  }else{
+    order = CASES.map((_,i)=>i);
+    shuffle(order);
+  }
+  show("screenQuiz");
+  renderCase();
 }
 
 /* ===== 出題描画 ===== */
 function renderCase(){
   const c = CASES[order[idx]];
-  $("progressLabel").textContent = `第 ${idx+1} 問 / ${CASES.length}`;
-  $("progressFill").style.width = `${(idx)/CASES.length*100}%`;
+  const total = order.length;
+  $("progressLabel").textContent = (currentMode==="today") ? "今日の一問" : `第 ${idx+1} 問 / ${total}`;
+  $("progressFill").style.width = `${(idx)/total*100}%`;
 
   const infoCells = [
     `<div><span class="label">患 者</span>${c.pt.age}・${c.pt.sex}性</div>`,
@@ -692,13 +883,16 @@ function renderCase(){
       <div class="rp-main"><div class="drug">${r.drug}</div><div class="usage">${r.usage}</div></div>
     </div>`).join("");
 
+  const todayBanner = (currentMode==="today")
+    ? `<div class="today-banner"><span class="label">本日の一問</span><span class="date">${todayKey()}</span></div>` : "";
+
   $("rxCard").innerHTML = `
+    ${todayBanner}
     <div class="rx-head"><span class="title">処方箋</span><span class="no">No.${String(c.id).padStart(3,"0")} | 模擬症例</span></div>
     <div class="rx-patient">${infoCells.join("")}</div>
     <div class="rx-body">${rps}</div>
     ${c.note ? `<div class="rx-note"><b>備考・聞き取り:</b> ${c.note}</div>` : ""}
   `;
-
   $("judgeRow").style.display = "flex";
   $("categoryPanel").classList.remove("show");
   $("explainArea").innerHTML = "";
@@ -716,11 +910,10 @@ function onJudge(isGigi){
   }else{
     pendingJudge = "pass";
     $("judgeRow").style.display = "none";
-    stamp("pass","監査済");
+    stamp("pass","通過");
     finalize(null);
   }
 }
-
 function renderCats(){
   const grid = $("catGrid");
   grid.innerHTML = "";
@@ -736,14 +929,12 @@ function renderCats(){
   });
   $("categoryPanel").classList.add("show");
 }
-
 function stamp(kind, text){
   const el = document.createElement("div");
   el.className = `stamp ${kind}`;
   el.textContent = text;
   $("rxCard").appendChild(el);
 }
-
 function finalize(chosenCat){
   const c = CASES[order[idx]];
   let outcome;
@@ -756,14 +947,12 @@ function finalize(chosenCat){
   results.push({caseId:c.id, outcome, cat:c.cat, chosenCat});
   renderExplain(c, outcome, chosenCat);
 }
-
 const OUTCOME_META = {
   correct:{cls:"correct", mark:"◎", label:"正解"},
   partial:{cls:"partial", mark:"○", label:"部分正解 ── 疑義の着眼点が違いました"},
   miss:{cls:"miss", mark:"✕", label:"見逃し ── この処方には疑義がありました"},
   over:{cls:"over", mark:"△", label:"過剰疑義 ── この処方は通過できる処方でした"}
 };
-
 function renderExplain(c, outcome, chosenCat){
   const m = OUTCOME_META[outcome];
   const catLabel = c.hasIssue ? CATS[c.cat] : "問題なし(監査通過)";
@@ -780,48 +969,50 @@ function renderExplain(c, outcome, chosenCat){
   if(c.hasIssue && c.talk){
     html += `<h4>こう伝える</h4><div class="talk-bubble">${c.talk}</div>`;
   }
+  const isLast = idx === order.length-1;
   html += `</div>
-    <button class="next-btn" id="nextBtn">${idx === CASES.length-1 ? "結果を見る" : "次の処方箋へ"}</button>`;
+    <button class="next-btn" id="nextBtn">${isLast ? "結果を見る" : "次の処方箋へ"}</button>`;
   $("explainArea").innerHTML = html;
   $("nextBtn").addEventListener("click", next);
   $("nextBtn").scrollIntoView({behavior:"smooth", block:"nearest"});
 }
-
 function next(){
   idx++;
-  if(idx >= CASES.length){
+  if(idx >= order.length){
     renderResult();
   }else{
     renderCase();
   }
 }
 
-/* ===== 結果 ===== */
+/* ===== スコア計算・段位 ===== */
 function calcScore(){
-  let score = 0;
+  let s = 0;
   results.forEach(r=>{
-    if(r.outcome==="correct") score += 1;
-    else if(r.outcome==="partial") score += 0.5;
+    if(r.outcome==="correct") s += 1;
+    else if(r.outcome==="partial") s += 0.5;
   });
-  return score;
+  return s;
 }
-
-function rankOf(score){
-  const r = score / CASES.length;
+function rankOf(score, total){
+  const r = score / total;
   if(r >= 0.9)  return {name:"師範", seal:"師範", msg:"鋭い監査眼。後輩の指導もお任せできるレベルです。"};
   if(r >= 0.75) return {name:"師範代", seal:"師範代", msg:"あと一歩で師範。見逃したカテゴリを復習しましょう。"};
   if(r >= 0.55) return {name:"一人前", seal:"一人前", msg:"基本は身についています。配合剤と腎機能に磨きを。"};
   if(r >= 0.35) return {name:"見習い", seal:"見習", msg:"伸びしろ十分。まずは禁忌と日数制限を固めましょう。"};
   return {name:"入門者", seal:"入門", msg:"ここからがスタート。解説を読み直してもう一周!"};
 }
+function formatScore(s){ return Number.isInteger(s) ? String(s) : s.toFixed(1); }
 
+/* ===== 結果画面 ===== */
 function renderResult(){
+  const total = order.length;
   const score = calcScore();
-  const rank = rankOf(score);
+  const pct = Math.round(score/total*100);
+  const rank = rankOf(score, total);
   const count = {correct:0, partial:0, miss:0, over:0};
   results.forEach(r=>count[r.outcome]++);
 
-  // カテゴリ別正答率(問題なしケースは「通過判断」として集計)
   const catAgg = {};
   Object.keys(CATS).forEach(k=>catAgg[k]={ok:0,total:0});
   catAgg["none"]={ok:0,total:0};
@@ -834,56 +1025,163 @@ function renderResult(){
   const catRows = [...Object.entries(CATS), ["none","問題なし(通過判断)"]]
     .filter(([k])=>catAgg[k].total>0)
     .map(([k,label])=>{
-      const pct = Math.round(catAgg[k].ok/catAgg[k].total*100);
-      return `<div class="cat-row"><span class="name">${label}</span><div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div><span class="pct">${pct}%</span></div>`;
+      const p = Math.round(catAgg[k].ok/catAgg[k].total*100);
+      return `<div class="cat-row"><span class="name">${label}</span><div class="bar"><div class="bar-fill" style="width:${p}%"></div></div><span class="pct">${p}%</span></div>`;
     }).join("");
 
+  // 今日の一問は段位判定を出さずシンプル表示
+  const rankBlock = (currentMode==="today")
+    ? `<div class="rank-seal">${count.correct?"正解":"再挑戦"}</div>
+       <div class="rank-name">${count.correct?"本日の一問 正解!":"惜しい!"}</div>
+       <div class="rank-msg">${count.correct?"連続記録を伸ばしましょう。明日もお待ちしています。":"解説を読んで、明日また挑戦を。"}</div>`
+    : `<div class="rank-seal">${rank.seal}</div>
+       <div class="rank-name">段位:${rank.name}</div>
+       <div class="rank-msg">${rank.msg}</div>`;
+
   $("finalCard").innerHTML = `
-    <div class="rank-seal">${rank.seal}</div>
-    <div class="rank-name">段位:${rank.name}</div>
-    <div class="rank-msg">${rank.msg}</div>
+    ${rankBlock}
     <div class="score-grid">
-      <div class="score-cell c-correct"><div class="num">${formatScore(score)}</div><div class="lbl">スコア / ${CASES.length}</div></div>
+      <div class="score-cell c-correct"><div class="num">${formatScore(score)}</div><div class="lbl">スコア / ${total}</div></div>
       <div class="score-cell c-miss"><div class="num">${count.miss}</div><div class="lbl">見逃し</div></div>
       <div class="score-cell c-over"><div class="num">${count.over}</div><div class="lbl">過剰疑義</div></div>
     </div>
-    <div class="cat-stats">
-      <h3>カテゴリ別 正答率</h3>
-      ${catRows}
-    </div>
+    <div class="cat-stats"><h3>カテゴリ別 正答率</h3>${catRows}</div>
     <button class="share-btn" id="shareBtn">結果をXでシェア</button>
-    <button class="retry-btn" id="retryBtn">もう一度監査する(出題順シャッフル)</button>
+    <button class="retry-btn" id="retryBtn">同じモードでもう一度</button>
+    <button class="home-btn" id="homeBtn">道場の入口へ戻る</button>
   `;
   $("shareBtn").addEventListener("click", ()=>{
-    const text = `処方監査道場で${CASES.length}枚の処方箋を監査。スコア ${formatScore(score)}/${CASES.length}【段位:${rank.name}】 見逃し${count.miss}・過剰疑義${count.over}`;
+    const modeLabel = MODE_META[currentMode].label;
+    const text = (currentMode==="today")
+      ? `処方監査道場「今日の一問」に挑戦。${count.correct?"正解":"また明日リベンジ"}!`
+      : `処方監査道場【${modeLabel}】スコア ${formatScore(score)}/${total}(${pct}%)・段位${rank.name} 見逃し${count.miss}/過剰疑義${count.over}`;
     const url = "https://aocap-yaku.github.io/kansa-dojo/";
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${encodeURIComponent("処方監査道場,薬剤師")}`,"_blank");
   });
-  $("retryBtn").addEventListener("click", startQuiz);
+  $("retryBtn").addEventListener("click", ()=>startMode(currentMode));
+  $("homeBtn").addEventListener("click", ()=>{ renderTop(); show("screenTop"); });
 
-  saveBest(score, rank.name);
+  // 記録保存
+  saveResult({mode:currentMode, score, total, pct, rank:rank.name});
   $("progressFill").style.width = "100%";
   show("screenResult");
 }
 
-function formatScore(s){ return Number.isInteger(s) ? String(s) : s.toFixed(1); }
-
-/* ===== ベストスコア保存 ===== */
-function loadBest(){
+/* ===== localStorage 永続化 ===== */
+const LS_KEY = "kansaDojo_v2";
+function loadDB(){
   try{
-    const raw = localStorage.getItem("kansaDojoBest");
-    return raw ? JSON.parse(raw) : null;
-  }catch(e){ return null; }
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : {history:[], streak:0, lastTodayKey:null};
+  }catch(e){ return {history:[], streak:0, lastTodayKey:null}; }
 }
-function saveBest(score, rankName){
-  try{
-    const best = loadBest();
-    if(!best || score > best.score){
-      localStorage.setItem("kansaDojoBest", JSON.stringify({score, rank:rankName, date:new Date().toISOString().slice(0,10)}));
+function saveDB(db){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(db)); }catch(e){}
+}
+function saveResult(rec){
+  const db = loadDB();
+  const today = todayKey();
+  // 今日の一問のストリーク処理
+  if(rec.mode==="today"){
+    if(db.lastTodayKey !== today){
+      // 昨日の継続か判定
+      const y = new Date(); y.setDate(y.getDate()-1);
+      const yKey = `${y.getFullYear()}-${String(y.getMonth()+1).padStart(2,"0")}-${String(y.getDate()).padStart(2,"0")}`;
+      db.streak = (db.lastTodayKey === yKey) ? (db.streak+1) : 1;
+      db.lastTodayKey = today;
     }
-  }catch(e){ /* localStorage不可の環境でも動作継続 */ }
+  }
+  db.history.push({
+    date: today,
+    ts: Date.now(),
+    mode: rec.mode,
+    score: rec.score,
+    total: rec.total,
+    pct: rec.pct,
+    rank: rec.rank
+  });
+  // 履歴は直近100件まで
+  if(db.history.length > 100) db.history = db.history.slice(-100);
+  saveDB(db);
+}
+function loadStats(){
+  const db = loadDB();
+  const plays = db.history;
+  const bestPct = plays.length ? Math.max(...plays.map(h=>h.pct)) : 0;
+  return {
+    totalPlays: plays.length,
+    bestPct,
+    streak: db.streak || 0,
+    lastTodayKey: db.lastTodayKey
+  };
 }
 
+/* ===== 履歴・グラフ画面 ===== */
+function renderHist(){
+  const db = loadDB();
+  const plays = db.history.slice();
+  let body;
+  if(plays.length === 0){
+    body = `<div class="hist-empty">まだ記録がありません。<br>まずは「今日の一問」か「ランダム10問」から挑戦してみましょう。</div>`;
+  }else{
+    // 直近20件で折れ線(正答率%)
+    const recent = plays.slice(-20);
+    const chart = buildChartSVG(recent);
+    const list = plays.slice().reverse().slice(0,15).map(h=>`
+      <div class="hist-item">
+        <span class="date">${h.date.slice(5)}</span>
+        <span class="mode">${MODE_META[h.mode]?.short ?? h.mode}</span>
+        <span class="sc">${formatScore(h.score)}/${h.total}(${h.pct}%)</span>
+        <span class="rk">${h.rank}</span>
+      </div>`).join("");
+    body = `
+      <div class="chart-wrap">${chart}</div>
+      <div class="hist-list">${list}</div>`;
+  }
+  $("histCard").innerHTML = `
+    <h2>稽古の記録</h2>
+    <div class="sub">正答率の推移(直近20回)と挑戦ログ</div>
+    ${body}
+    <button class="home-btn" id="histHomeBtn" style="margin-top:16px;">道場の入口へ戻る</button>
+  `;
+  $("histHomeBtn").addEventListener("click", ()=>{ renderTop(); show("screenTop"); });
+}
+
+function buildChartSVG(data){
+  const W = 320, H = 150, padL = 30, padR = 10, padT = 12, padB = 24;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const n = data.length;
+  const xFor = (i) => padL + (n<=1 ? plotW/2 : (i/(n-1))*plotW);
+  const yFor = (v) => padT + (1 - v/100)*plotH;
+  // グリッド(0/50/100)
+  let grid = "";
+  [0,50,100].forEach(v=>{
+    const y = yFor(v);
+    grid += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W-padR}" y2="${y.toFixed(1)}" stroke="#D8CDB5" stroke-width="1"/>`;
+    grid += `<text x="${padL-6}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="9" fill="#6B5E4B">${v}</text>`;
+  });
+  // 折れ線
+  const pts = data.map((h,i)=>`${xFor(i).toFixed(1)},${yFor(h.pct).toFixed(1)}`).join(" ");
+  const line = n>=2 ? `<polyline points="${pts}" fill="none" stroke="#C03B2B" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>` : "";
+  // 点
+  const dots = data.map((h,i)=>{
+    const col = h.mode==="today" ? "#B89234" : (h.mode==="all" ? "#5C7148" : "#2E4A5B");
+    return `<circle cx="${xFor(i).toFixed(1)}" cy="${yFor(h.pct).toFixed(1)}" r="3.5" fill="${col}" stroke="#FBF7EF" stroke-width="1.5"/>`;
+  }).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="正答率の推移グラフ">
+    ${grid}${line}${dots}
+    <text x="${padL}" y="${H-6}" font-size="9" fill="#6B5E4B">古い</text>
+    <text x="${W-padR}" y="${H-6}" text-anchor="end" font-size="9" fill="#6B5E4B">最新</text>
+  </svg>`;
+}
+
+/* ===== 初期化 ===== */
+function init(){
+  $("btnGigi").addEventListener("click", ()=>onJudge(true));
+  $("btnPass").addEventListener("click", ()=>onJudge(false));
+  $("histBtn").addEventListener("click", ()=>{ renderHist(); show("screenHist"); });
+  renderTop();
+}
 init();
 
 </script>
